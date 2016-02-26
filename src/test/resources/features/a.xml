@@ -1,0 +1,17 @@
+<h3 style="font-size: 17px; position: relative; top: 19px; left: 30px;">
+    <div class="ng-binding" style="float: left; height: 30px;">Menystyrning 1 (0706554801) -
+    </div> <!-- ngIf: type === 'cdg' --> <!-- ngIf: (type === 'cdg') && false --> <!-- ngIf: type === 'aa' -->
+    <a href="/web/touchpoint/index/-/mo/adminweb/company/se.60001001.mo.teliasonera.com/Admin_Web_AB/autoattendants/%2B46706554801/VIPkunder1"
+       ng-if="type === 'aa'" style="position: relative; left: 0px; top: -15px; width: auto;"
+       class="overview-link ng-scope" ui-sref="root.company.autoattendants.one(vars)">
+        <span class="ng-binding" title="VIP-kunder1">"VIP-kunder1"</span>
+        <span class="ng-hide" style="top: -2px; position: relative;"
+              ng-show="(type === 'aa' || type === 'cdg') &amp;&amp; settingsObject.isOpen">
+            <img class="ts-unlocked" src="/adminweb-portlet/images/group_lock_open.png">
+        </span>
+        <span class="" style="top: -2px; position: relative;"
+              ng-show="(type === 'aa' || type === 'cdg') &amp;&amp; !settingsObject.isOpen">
+            <img class="ts-locked" src="/adminweb-portlet/images/group_lock_closed.png">
+        </span>
+    </a><!-- end ngIf: type === 'aa' -->
+</h3>
