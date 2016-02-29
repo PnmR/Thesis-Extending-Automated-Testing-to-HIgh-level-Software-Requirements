@@ -1,18 +1,13 @@
 package org.cukesSel.step_definitions;
 
-import cucumber.api.PendingException;
 import cucumber.api.java.After;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
-import org.openqa.selenium.By;
-import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-import javax.swing.*;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -40,17 +35,16 @@ public class Steps {
     public void iVisit(String website) throws Throwable {
 
         // visit the site
-        driver.get(website);
+        driver.navigate().to(website);
     }
 
     @When("^I go to Admin Web Ab section$")
     public void IGoToAdminWebABSection() throws Throwable {
-
-
         WebElement searchInput = getElementSafely("//*[@id ='search-all-company-id']", driver, wait);
         searchInput.sendKeys("Admin Web Ab"); // writing into the form
 
         WebElement adminTab = getElementSafely("//strong[contains(text(),'Admin Web AB')]", driver, wait);
+        wait.until(elementToBeClickable(adminTab));
         adminTab.click();
 
     }
@@ -59,6 +53,7 @@ public class Steps {
     public void iClickOnStart() throws Throwable {
 
         WebElement startMenu = getElementSafely("//a[@id= 'start-menu-id' and contains(.,'Start')]", driver, wait);
+        wait.until(elementToBeClickable(startMenu));
         startMenu.click();
 
     }
@@ -101,15 +96,30 @@ public class Steps {
 
     private int gruppItemNum;
 
-    @Given("^There are (\\d+) [\\wåöä]+$")
-    public void thereAreSvarsgrupp(int number) throws Throwable {
+    @Given("^There (?:is|are) (\\d+) [\\wåöä]+$")
+    public void thereAre(int number) throws Throwable {
         gruppItemNum = number;
     }
+
+    @When("^I expand Users$")
+    public void iExpandUsers() throws Throwable {
+        String userXpandXpath = String.format("//div[h3[div[contains(text(), 'Users') and @class='ng-binding']]]//div/img[@alt = 'Expandera']");
+        WebElement userXpand = getElementSafely(userXpandXpath, driver, wait);
+
+        wait.until(elementToBeClickable(userXpand));
+        userXpand.click();
+    }
+
 
     //@Then ("^Under Admin Web AB, all ([A-z]+(?:er|ar)) are shown$")
     @Then("^Under Admin Web AB, all ([A-zöåä]+) are shown$")
     public void underAdminWebAbAllAreShown(String grupp) throws Throwable {
-        String gruppXpath = String.format("//div[contains(text(), '%s') and @class='ng-binding']", grupp);
+        String gruppXpath;
+        if (grupp.equals("Users")) {
+            gruppXpath = String.format("//li[@class = 'overview-row last-child']/div/a[@class = 'overview-link-sep ng-scope']/span[@class ='overview-link-text ng-binding'  and @title and text()] ");
+        } else {
+            gruppXpath = String.format("//div[contains(text(), '%s') and @class='ng-binding']", grupp);
+        }
         List<WebElement> gruppList = getElementsSafely(gruppXpath, driver, wait);
         int count = 0;
         for (WebElement webEl : gruppList) {
@@ -121,8 +131,17 @@ public class Steps {
 
     }
 
-    @Then("^For a ([A-z]+), (title|lock icon|link) is visible$")
-    public void forAIsVisible(String grupp, String item) throws Throwable {
+    String grupp;
+    private int nodeIndex;
+
+    @Given("^I am checking ([A-z]+) node nr (\\d+)$")
+    public void iAmCheckingNodeNr(String grupp, int nodeNum) throws Throwable {
+        this.nodeIndex = nodeNum - 1; // index starts from 0
+        this.grupp = grupp;
+    }
+
+    @Then("^For this node, (title|lock icon|link) is visible$")
+    public void forThisNodeIsVisible(String item) throws Throwable {
         String partItemXpath = "";
 
         switch (item) {
@@ -135,90 +154,99 @@ public class Steps {
                 partItemXpath = "/../a";
                 break;
         }
-        String gruppXpath = String.format("//div[contains(text(), '%s') and @class='ng-binding']", grupp);
-        List<WebElement> gruppList = getElementsSafely(gruppXpath, driver, wait);
 
         String itemXpath = String.format("//h3//div[contains(text(), '%s')]", grupp);
 
         itemXpath.concat(partItemXpath);
         List<WebElement> itemList = getElementsSafely(itemXpath, driver, wait);
+        WebElement nodeItem = itemList.get(nodeIndex);
 
-        int count = 0;
-        for (WebElement e : itemList) {
-            if (e.isDisplayed()) {
-                count++;
-            }
-        }
-        assertThat(count, is(equalTo(gruppList.size())));
-
+        assertThat(nodeItem.isDisplayed(), is(equalTo(Boolean.TRUE)));
     }
 
 
-    @Then("^For a ([A-z]+), number is visible$")
-    public void forANumberIsVisible(String grupp) throws Throwable {
-        String gruppXpath = String.format("//div[contains(text(), '%s') and @class='ng-binding']", grupp);
-        List<WebElement> gruppList = getElementsSafely(gruppXpath, driver, wait);
+    @Then("^For this node, number is visible$")
+    public void forThisNodeNumberIsVisible() throws Throwable {
 
         String itemXpath = String.format("//h3//div[contains(text(), '%s')]", grupp);
         List<WebElement> itemList = getElementsSafely(itemXpath, driver, wait);
+        WebElement nodeItem = itemList.get(nodeIndex);
+        String text = nodeItem.getText();
+        text = text.substring(text.indexOf('(') + 1, text.indexOf(')'));
+        assertThat(isInteger(text), is(equalTo(Boolean.TRUE)));
+        assertThat(nodeItem.isDisplayed(), is(equalTo(Boolean.TRUE)));
+    }
 
-        int count = 0;
-        for (WebElement e : itemList) {
-            String text = e.getText();
-            text = text.substring(text.indexOf('(') + 1, text.indexOf(')'));
-            if (isInteger(text)) {
-                count++;
-            }
-        }
-        assertThat(count, is(equalTo(gruppList.size())));
+    String gruppTitle, gruppMobNum;
+
+    @When("^I click on the link$")
+    public void iClickOnTheLink() throws Throwable {
+        // mistake on the span class on svarsgrupp
+        String titleXpath = String.format("//h3//div[contains(text(), '%s')]/../a/span[contains(class, ng-binding)]", grupp);
+        List<WebElement> titleList = getElementsSafely(titleXpath, driver, wait);
+        gruppTitle = titleList.get(nodeIndex).getText();
+
+        List<WebElement> numList = getElementsSafely(String.format("//h3//div[contains(text(), '%s')]", grupp), driver, wait);
+        String text = numList.get(nodeIndex).getText();
+        gruppMobNum = text.substring(text.indexOf('('), text.indexOf(')') + 1);
+
+        wait.until(elementToBeClickable(titleList.get(nodeIndex)));
+        titleList.get(nodeIndex).click();
 
     }
 
-    String menyStyrningTitle, menyStyrningNum;
-
-    @When("^I click on Menystyrningens link$")
-    public void iClickOnMenystyrningensLink() throws Throwable {
-
-        String myXpath = String.format("//h3//div[contains(text(), '%s')]/../a/span[@class = 'ng-binding']", "Menystyrning");
-        List<WebElement> menystyrningTitleList = getElementsSafely(myXpath, driver, wait);
-        menyStyrningTitle = menystyrningTitleList.get(0).getText();
-
-        List<WebElement> menystyrningNumList = getElementsSafely("//h3//div[contains(text(), 'Menystyrning')]", driver, wait);
-        String text = menystyrningNumList.get(0).getText();
-        menyStyrningNum = text.substring(text.indexOf('('), text.indexOf(')') + 1);
-
-        wait.until(elementToBeClickable(menystyrningTitleList.get(0)));
-        menystyrningTitleList.get(0).click();
-
-    }
-
-    @Then("^I get forwarded to correct menystyrning page$")
-    public void iGetForwardedToCorrectMenystyrningPage() throws Throwable {
-        String forwardedMenystyrningNumXpath = "//h1[@id = 'change-aaName-wrapper']/span[@class = 'h1-number ng-binding']";
-        List<WebElement> forwardedMenystyrningNum = getElementsSafely(forwardedMenystyrningNumXpath, driver, wait);
+    @Then("^I get forwarded to correct page$")
+    public void iGetForwardedToCorrectPage() throws Throwable {
+        String forwardedNumXpath = "//h1[contains(id, change-)]/span[@class = 'h1-number ng-binding']";
+        List<WebElement> forwardedMobNumList = getElementsSafely(forwardedNumXpath, driver, wait);
 
 
         Pattern pattern = Pattern.compile("\"(.*?)\"");
-        String forwardedMenystyrningTitleXpath = "//h1[@id = 'change-aaName-wrapper']/span[@class = 'ng-binding']";
-        List<WebElement> forwardedMenystyrningTitle = getElementsSafely(forwardedMenystyrningTitleXpath, driver, wait);
+        String forwardedTitleXpath = "//h1[contains(id, change-)]/span[@class = 'ng-binding']";
+        List<WebElement> forwardedTitleList = getElementsSafely(forwardedTitleXpath, driver, wait);
+        Matcher matcher = pattern.matcher(gruppTitle);
+        if (matcher.find()) {
+            gruppTitle = matcher.group(1);
+        }
+        assertThat(forwardedTitleList.get(0).getText(), is(equalTo(gruppTitle)));
+        assertThat(forwardedMobNumList.get(0).getText(), is(equalTo(gruppMobNum)));
+    }
+
+    private String changedMenystyrningName;
+
+    @When("^I change name to (.+)$")
+    public void iChangeMenystyrningName(String newName) throws Throwable {
+        // click on bytNamn
+        String bytNamnXpath = "//h1[@id = 'change-aaName-wrapper']/a[not(@disabled) and span[contains(text(), 'Byt namn')]]";
+        WebElement bytNamn = getElementSafely(bytNamnXpath, driver, wait);
+        wait.until(elementToBeClickable(bytNamn));
+        bytNamn.click();
+
+        // writing on the input
+        String titleInputXpath = "//h1[@id = 'change-aaName-wrapper']/span/input[@name = 'aaName']";
+        WebElement titleInput = getElementSafely(titleInputXpath, driver, wait);
+
+        // to write over the input text
+        changedMenystyrningName = newName;
+        titleInput.sendKeys(Keys.chord(Keys.CONTROL, "a"), changedMenystyrningName);
+        driver.findElement(By.xpath("//div[@class = 'tsr-header-main']")).click(); //clicking outside to save the change
+    }
+
+    @Then("^I verify change$")
+    public void iVerifyChangeIn() throws Throwable {
+        // go back to the page
+        driver.navigate().back();
+
+        String menystyrningTitleXpath = String.format("//h3//div[contains(text(), '%s')]/../a/span[@class = 'ng-binding']", "Menystyrning");
+        List<WebElement> menystyrningTitleList = getElementsSafely(menystyrningTitleXpath, driver, wait);
+        String menyStyrningTitle = menystyrningTitleList.get(0).getText();
+        Pattern pattern = Pattern.compile("\"(.*?)\"");
         Matcher matcher = pattern.matcher(menyStyrningTitle);
         if (matcher.find()) {
             menyStyrningTitle = matcher.group(1);
         }
-        assertThat(forwardedMenystyrningTitle.get(0).getText(), is(equalTo(menyStyrningTitle)));
-        assertThat(forwardedMenystyrningNum.get(0).getText(), is(equalTo(menyStyrningNum)));
-    }
+        assertThat(menyStyrningTitle, is(equalTo(changedMenystyrningName)));
 
-    @When("^I change Menystyrning name$")
-    public void iChangeMenystyrningName() throws Throwable {
-        // Write code here that turns the phrase above into concrete actions
-        throw new PendingException();
-    }
-
-    @Then("^I verify change in \"([^\"]*)\"$")
-    public void iVerifyChangeIn(String arg1) throws Throwable {
-        // Write code here that turns the phrase above into concrete actions
-        throw new PendingException();
     }
 
 
@@ -234,9 +262,6 @@ public class Steps {
     }
 
     public static WebElement getElementSafely(String myXpathArg, WebDriver driver, WebDriverWait wait) {
-
-
-
         wait.until(presenceOfElementLocated(By.xpath(myXpathArg)));
         try {
             Thread.sleep(500);
@@ -249,7 +274,6 @@ public class Steps {
 
 
     public static List<WebElement> getElementsSafely(String myXpathArg, WebDriver driver, WebDriverWait wait) {
-
         wait.until(presenceOfAllElementsLocatedBy(By.xpath(myXpathArg)));
         try {
             Thread.sleep(500);
@@ -263,8 +287,7 @@ public class Steps {
 
     @After()
     public void closeBrowser() {
-
         // close the browser
-        //  driver.quit();
+        driver.quit();
     }
 }

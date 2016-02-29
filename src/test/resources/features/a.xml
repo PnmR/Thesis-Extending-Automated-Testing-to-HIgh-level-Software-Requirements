@@ -1,17 +1,32 @@
-<h3 style="font-size: 17px; position: relative; top: 19px; left: 30px;">
-    <div class="ng-binding" style="float: left; height: 30px;">Menystyrning 1 (0706554801) -
-    </div> <!-- ngIf: type === 'cdg' --> <!-- ngIf: (type === 'cdg') && false --> <!-- ngIf: type === 'aa' -->
-    <a href="/web/touchpoint/index/-/mo/adminweb/company/se.60001001.mo.teliasonera.com/Admin_Web_AB/autoattendants/%2B46706554801/VIPkunder1"
-       ng-if="type === 'aa'" style="position: relative; left: 0px; top: -15px; width: auto;"
-       class="overview-link ng-scope" ui-sref="root.company.autoattendants.one(vars)">
-        <span class="ng-binding" title="VIP-kunder1">"VIP-kunder1"</span>
-        <span class="ng-hide" style="top: -2px; position: relative;"
-              ng-show="(type === 'aa' || type === 'cdg') &amp;&amp; settingsObject.isOpen">
-            <img class="ts-unlocked" src="/adminweb-portlet/images/group_lock_open.png">
-        </span>
-        <span class="" style="top: -2px; position: relative;"
-              ng-show="(type === 'aa' || type === 'cdg') &amp;&amp; !settingsObject.isOpen">
-            <img class="ts-locked" src="/adminweb-portlet/images/group_lock_closed.png">
-        </span>
-    </a><!-- end ngIf: type === 'aa' -->
-</h3>
+<li class="overview-row last-child">
+    <div>
+        <div class="before"></div>
+        <div class="ng-isolate-scope ng-pristine ng-valid" style="float: left;" ng-model="toggleUserLevel"
+             default-open="false" ng-click="ngModel = !ngModel">
+            <div ng-show="!ngModel" class="overview-toggle">
+                <img src="/adminweb-portlet/images/plus.png" alt="Expandera">
+            </div>
+            <div ng-show="ngModel" class="overview-toggle ng-hide">
+                <img src="/adminweb-portlet/images/minus.png" alt="Kollapsa">
+            </div>
+        </div> <!-- ngIf: company -->
+        <a href="/web/touchpoint/index/-/mo/adminweb/company/se.60001001.mo.teliasonera.com/Admin_Web_AB/users/se000002/Maria_Niskanen"
+           class="overview-link-sep ng-scope"
+           style="float: left; position: relative; top: 0px; left: 0px; width: auto; padding-top: 4px;" ng-if="company"
+           ui-sref="root.company.users.one(vars)">
+            <span class="overview-link-text ng-binding" title="Maria Niskanen">Maria Niskanen (0706554610, 060171501)
+                (adm)
+            </span>
+        </a><!-- end ngIf: company -->
+        <div> <!-- ngIf: type === 'agent' --> <!-- ngIf: type === 'user' -->
+            <span class="overview-icon-wrapper ng-scope" ng-if="type === 'user'">
+                <span ng-switch="selectedActivity"> <!-- ngSwitchWhen: available -->
+                    <span class="ng-scope" ng-switch-when="available">
+                        <img class="overview-icon" src="/adminweb-portlet/images/ava.png" alt="Tillgänglig">
+                        Tillgänglig
+                    </span> <!-- ngSwitchWhen: meeting --> <!-- ngSwitchWhen: lunch --> <!-- ngSwitchWhen: temp_out --> <!-- ngSwitchWhen: gone_for_day --> <!-- ngSwitchWhen: back_later --> <!-- ngSwitchWhen: sick --> <!-- ngSwitchWhen: vacation -->
+                </span>
+            </span><!-- end ngIf: type === 'user' -->
+        </div>
+    </div> <!-- ngIf: toggleUserLevel -->
+</li>

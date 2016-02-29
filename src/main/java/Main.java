@@ -1,7 +1,4 @@
-import org.openqa.selenium.By;
-import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -19,6 +16,7 @@ import static org.openqa.selenium.support.ui.ExpectedConditions.presenceOfElemen
 
 /**
  * Created by poonam on 2/15/16.
+ * Main class serves as merely a java class where i test my tests.
  */
 public class Main {
     public static void main(String[] args) {
@@ -29,12 +27,41 @@ public class Main {
         WebDriverWait wait = new WebDriverWait(driver, 10);
 
 
-        driver.get("http://smesol-aw-test.sundsvall.dewire.com:8080/web/smesol/index?CT_REMOTE_USER=Selenium&IDP=TIWSS&MO_ROLE=CUSTOMER_SUPPORT");
+        driver.navigate().to("http://smesol-aw-test.sundsvall.dewire.com:8080/web/smesol/index?CT_REMOTE_USER=Selenium&IDP=TIWSS&MO_ROLE=CUSTOMER_SUPPORT");
 
         WebElement searchInput = getElementSafely("//*[@id ='search-all-company-id']", driver, wait);
+        searchInput.sendKeys("Admin Web Ab"); // writing into the form
 
+        //click on admin web ab search item
+        WebElement adminTab = getElementSafely("//strong[contains(text(),'Admin Web AB')]", driver, wait);
+        wait.until(elementToBeClickable(adminTab));
+        adminTab.click();
 
+        //click on start menu
+        WebElement startMenu = getElementSafely("//a[@id= 'start-menu-id' and contains(.,'Start')]", driver, wait);
+        wait.until(elementToBeClickable(startMenu));
+        startMenu.click();
 
+        // cick on växelöversikt
+        String tabXpath = String.format("//a[strong[contains(text(),'Växelöversikt') and not(@disabled)]]");
+        WebElement tab = getElementSafely(tabXpath, driver, wait);
+        wait.until(elementToBeClickable(tab));
+        tab.click();
+
+        String userXpandXpath = String.format("//div[h3[div[contains(text(), 'Users') and @class='ng-binding']]]//div/img[@alt = 'Expandera']");
+        WebElement userXpand = getElementSafely(userXpandXpath, driver, wait);
+
+        wait.until(elementToBeClickable(userXpand));
+        userXpand.click();
+
+        String userXpath = String.format("//li[@class = 'overview-row last-child']/div/a[@class = 'overview-link-sep ng-scope']/span[@class ='overview-link-text ng-binding'  and @title and text()] ");
+
+        List<WebElement> userList = getElementsSafely(userXpath,driver, wait);
+        String text ="";
+        for(WebElement u: userList) {
+            text = text.concat(u.getText() +"\n");
+        }
+        JOptionPane.showMessageDialog(new JFrame(), text);
     }
     public static String getElementXPath(WebDriver webDriver, WebElement webElement) {
             String jscript = "function getPathTo(node) {" +
@@ -54,19 +81,15 @@ public class Main {
 
     }
     public static WebElement getElementSafely(String myXpathArg, WebDriver driver, WebDriverWait wait) {
+        wait.until(presenceOfElementLocated(By.xpath(myXpathArg)));
         try {
             Thread.sleep(500);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-
-
-        wait.until(presenceOfElementLocated(By.xpath(myXpathArg)));
         return driver.findElement(By.xpath(myXpathArg));
 
     }
-
-
 
     public static List<WebElement> getElementsSafely(String myXpath, WebDriver driver, WebDriverWait wait) {
         wait.until(presenceOfAllElementsLocatedBy(By.xpath(myXpath)));
