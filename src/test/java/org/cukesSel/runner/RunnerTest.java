@@ -11,8 +11,8 @@ import org.junit.runner.RunWith;
 @RunWith(Cucumber.class)
 @CucumberOptions(plugin = {"pretty", "html:target/cucumber"},
         snippets = SnippetType.CAMELCASE,
-        features = "src/test/resources/features/visiting_company_start_page.feature",
+        features = "src/test/resources/features/admin_clicks_on_start_of_admin _web _ab_section.feature",
         glue = "org.cukesSel.step_definitions",
-        tags = "@new")
+        tags = "~@prob")
 public class RunnerTest {
 }

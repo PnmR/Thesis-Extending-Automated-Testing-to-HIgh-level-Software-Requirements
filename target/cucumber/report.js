@@ -1,142 +1,113 @@
-$(document).ready(function() {var formatter = new CucumberHTML.DOMFormatter($('.cucumber-report'));formatter.uri("src/test/resources/features/visiting_company_start_page.feature");
+$(document).ready(function() {var formatter = new CucumberHTML.DOMFormatter($('.cucumber-report'));formatter.uri("src/test/resources/features/admin_clicks_on_start_of_admin _web _ab_section.feature");
 formatter.feature({
   "line": 1,
-  "name": "Visiting Company Start Page",
-  "description": "In order to navigate through different parts of Company start Page\nAs a user\nI want to visit Company start page",
-  "id": "visiting-company-start-page",
+  "name": "Admin clicks on Start of Admin Web Ab section",
+  "description": "In order to be able to navigate through different parts of Company start Page\nAs an Admin\nI want to click on start of Admin Web Ab section",
+  "id": "admin-clicks-on-start-of-admin-web-ab-section",
   "keyword": "Feature"
 });
-formatter.background({
+formatter.before({
+  "duration": 3661571075,
+  "status": "passed"
+});
+formatter.scenario({
   "line": 6,
-  "name": "",
+  "name": "Admin is in the Admin Web Ab section",
   "description": "",
-  "type": "background",
-  "keyword": "Background"
+  "id": "admin-clicks-on-start-of-admin-web-ab-section;admin-is-in-the-admin-web-ab-section",
+  "type": "scenario",
+  "keyword": "Scenario"
 });
 formatter.step({
   "line": 7,
-  "name": "I visit http://smesol-aw-test.sundsvall.dewire.com:8080/web/smesol/index?CT_REMOTE_USER\u003dSelenium\u0026IDP\u003dTIWSS\u0026MO_ROLE\u003dCUSTOMER_SUPPORT",
+  "name": "Admin visits http://smesol-aw-test.sundsvall.dewire.com:8080/web/smesol/index?CT_REMOTE_USER\u003dSelenium\u0026IDP\u003dTIWSS\u0026MO_ROLE\u003dCUSTOMER_SUPPORT",
   "keyword": "Given "
 });
 formatter.step({
   "line": 8,
-  "name": "I go to Admin Web Ab section",
-  "keyword": "When "
+  "name": "Admin goes to Admin Web Ab section",
+  "keyword": "And "
 });
 formatter.step({
   "line": 9,
-  "name": "I click on Start",
+  "name": "Admin clicks on Start",
   "keyword": "When "
+});
+formatter.step({
+  "comments": [
+    {
+      "line": 10,
+      "value": "#    Then Company listed #prob"
+    }
+  ],
+  "line": 11,
+  "name": "Växelöversikt tab should be visible",
+  "keyword": "Then "
+});
+formatter.step({
+  "line": 12,
+  "name": "Logg tab should be visible",
+  "keyword": "And "
 });
 formatter.match({
   "arguments": [
     {
       "val": "http://smesol-aw-test.sundsvall.dewire.com:8080/web/smesol/index?CT_REMOTE_USER\u003dSelenium\u0026IDP\u003dTIWSS\u0026MO_ROLE\u003dCUSTOMER_SUPPORT",
-      "offset": 8
+      "offset": 13
     }
   ],
-  "location": "Steps.iVisit(String)"
+  "location": "Steps.adminVisits(String)"
 });
 formatter.result({
-  "duration": 4963944797,
+  "duration": 2225390648,
   "status": "passed"
 });
 formatter.match({
-  "location": "Steps.IGoToAdminWebABSection()"
+  "location": "Steps.adminGoesToAdminWebABSection()"
 });
 formatter.result({
-  "duration": 1979653539,
+  "duration": 1940256667,
   "status": "passed"
 });
 formatter.match({
-  "location": "Steps.iClickOnStart()"
+  "location": "Steps.adminClicksOnStart()"
 });
 formatter.result({
-  "duration": 1096353790,
-  "status": "passed"
-});
-formatter.scenario({
-  "line": 36,
-  "name": "",
-  "description": "",
-  "id": "visiting-company-start-page;",
-  "type": "scenario",
-  "keyword": "Scenario",
-  "tags": [
-    {
-      "line": 35,
-      "name": "@new"
-    }
-  ]
-});
-formatter.step({
-  "line": 37,
-  "name": "There is 10 Users",
-  "keyword": "Given "
-});
-formatter.step({
-  "line": 38,
-  "name": "I click on tab Växelöversikt",
-  "keyword": "And "
-});
-formatter.step({
-  "line": 39,
-  "name": "I expand Users",
-  "keyword": "When "
-});
-formatter.step({
-  "line": 40,
-  "name": "Under Admin Web AB, all Users are shown",
-  "keyword": "Then "
-});
-formatter.match({
-  "arguments": [
-    {
-      "val": "10",
-      "offset": 9
-    }
-  ],
-  "location": "Steps.thereAre(int)"
-});
-formatter.result({
-  "duration": 1022549,
+  "duration": 905341122,
   "status": "passed"
 });
 formatter.match({
   "arguments": [
     {
       "val": "Växelöversikt",
-      "offset": 15
+      "offset": 0
     }
   ],
-  "location": "Steps.iClickOnTab(String)"
+  "location": "Steps.tabShouldBeVisible(String)"
 });
 formatter.result({
-  "duration": 1466566960,
-  "status": "passed"
-});
-formatter.match({
-  "location": "Steps.iExpandUsers()"
-});
-formatter.result({
-  "duration": 7741148613,
+  "duration": 1218864963,
   "status": "passed"
 });
 formatter.match({
   "arguments": [
     {
-      "val": "Users",
-      "offset": 24
+      "val": "Logg",
+      "offset": 0
     }
   ],
-  "location": "Steps.underAdminWebAbAllAreShown(String)"
+  "location": "Steps.tabShouldBeVisible(String)"
 });
 formatter.result({
-  "duration": 786723649,
+  "duration": 595043232,
   "status": "passed"
 });
 formatter.after({
-  "duration": 68782491,
+  "duration": 70659146,
+  "status": "passed"
+});
+formatter.after({
+  "duration": 420117,
   "status": "passed"
 });
 });
