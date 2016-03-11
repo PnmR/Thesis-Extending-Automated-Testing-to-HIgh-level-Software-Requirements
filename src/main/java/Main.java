@@ -24,33 +24,54 @@ import static org.openqa.selenium.support.ui.ExpectedConditions.presenceOfElemen
 public class Main {
     public static void main(String[] args) {
 
-//        WebDriver driver = new FirefoxDriver();
-//
-//        // wait for the server to render all the element
-//        WebDriverWait wait = new WebDriverWait(driver, 10);
-//
-//
-//        driver.navigate().to("http://smesol-aw-test.sundsvall.dewire.com:8080/web/smesol/index?CT_REMOTE_USER=Selenium&IDP=TIWSS&MO_ROLE=CUSTOMER_SUPPORT");
-//
-//        WebElement searchInput = getElementSafely("//*[@id ='search-all-company-id']", driver, wait);
-//        searchInput.sendKeys("Admin Web Ab"); // writing into the form
-//
-//        //click on admin web ab search item
-//        WebElement adminTab = getElementSafely("//strong[contains(text(),'Admin Web AB')]", driver, wait);
-//        wait.until(elementToBeClickable(adminTab));
-//        adminTab.click();
-//
-//        //click on start menu
-//        WebElement startMenu = getElementSafely("//a[@id= 'start-menu-id' and contains(.,'Start')]", driver, wait);
-//        wait.until(elementToBeClickable(startMenu));
-//        startMenu.click();
-//
-//        // cick on växelöversikt
-//        String tabXpath = String.format("//a[strong[contains(text(),'Växelöversikt') and not(@disabled)]]");
-//        WebElement tab = getElementSafely(tabXpath, driver, wait);
-//        wait.until(elementToBeClickable(tab));
-//        tab.click();
-//
+        WebDriver driver = new FirefoxDriver();
+
+        // wait for the server to render all the element
+        WebDriverWait wait = new WebDriverWait(driver, 10);
+
+
+        driver.navigate().to("http://smesol-aw-test.sundsvall.dewire.com:8080/web/smesol/index?CT_REMOTE_USER=Selenium&IDP=TIWSS&MO_ROLE=CUSTOMER_SUPPORT");
+
+        WebElement searchInput = getElementSafely("//*[@id ='search-all-company-id']", driver, wait);
+        searchInput.sendKeys("Admin Web Ab"); // writing into the form
+
+        //click on admin web ab search item
+        WebElement adminTab = getElementSafely("//strong[contains(text(),'Admin Web AB')]", driver, wait);
+        wait.until(elementToBeClickable(adminTab));
+        adminTab.click();
+
+        //click on start menu
+        WebElement startMenu = getElementSafely("//a[@id= 'start-menu-id' and contains(.,'Start')]", driver, wait);
+        wait.until(elementToBeClickable(startMenu));
+        startMenu.click();
+
+        // cick on växelöversikt
+        String tabXpath = String.format("//a[strong[contains(text(),'Växelöversikt') and not(@disabled)]]");
+        WebElement tab = getElementSafely(tabXpath, driver, wait);
+        wait.until(elementToBeClickable(tab));
+        tab.click();
+
+        // admin expands Users
+        String userXpandXpath = String.format("//div[h3[div[contains(text(), 'Users') and @class='ng-binding']]]//div/img[@alt = 'Expandera']");
+        WebElement userXpand = getElementSafely(userXpandXpath, driver, wait);
+        wait.until(elementToBeClickable(userXpand));
+        userXpand.click();
+
+        String usersXpath = String.format("//li[@class = 'overview-row last-child']/div/a[@class = 'overview-link-sep ng-scope']/..//span[@class = 'ng-scope' and img] ");
+        List<WebElement> usersList = getElementsSafely(usersXpath, driver, wait);
+//        int userNr =1;
+//        String numNameRoleOfUsersXpath = usersList.get(0).getText();
+
+//        String numNameRoleOfSvarsgruppUsersXpath = String.format("//li[div[h3[div[contains(text(), '%s')]]]]//div[contains(., 'Users')]/../ul//span[@class = 'overview-link-text ng-binding' and @title]", gruppText);
+//        List<WebElement> numNameRoleOfSvarsgruppUsers = getElementsSafely(numNameRoleOfSvarsgruppUsersXpath, driver, wait);
+//        String usersNumNameRole = numNameRoleOfSvarsgruppUsers.get(userNr - 1).getText();
+//        String usersName = usersNumNameRole.substring(userNr - 1, usersNumNameRole.indexOf("(")); // extracting only name from the whole text- Maria Niskanen  (0706554610, 060171501) (adm)
+
+
+        JOptionPane.showMessageDialog(new JFrame(), "\"" +usersList.get(0).getText() +"\"");
+
+
+
 //        // admin checking
 //        String gruppListXpath;
 //        String grupp = "Svarsgrupp";
@@ -61,7 +82,7 @@ public class Main {
 //        }
 //        List<WebElement> gruppList = getElementsSafely(gruppListXpath, driver, wait);
 //        String gruppText = gruppList.get(0).getText(); // index starts from 0
-//
+
 //        //expand svarsgrupp
 //        String svarsgruppListXpath = String.format("//div/h3/div[contains(text(), 'Svarsgrupp') and @class='ng-binding']");
 //        List<WebElement> svarsgruppList = getElementsSafely(svarsgruppListXpath, driver, wait);
@@ -70,76 +91,19 @@ public class Main {
 //        WebElement xpand = getElementSafely(xpandXpath, driver, wait);
 //        wait.until(elementToBeClickable(xpand));
 //        xpand.click();
-//
-//               // users logged in is visible
-////        String usersUndersvarsgruppXpath = String.format("//li[div[h3[div[contains(text(), '%s')]]]]//div[contains(., 'Users')]", gruppText);
-////        WebElement usersUndersvarsgrupp = getElementSafely(usersUndersvarsgruppXpath, driver, wait);
-//
+
+               // users logged in is visible
+//        String usersUndersvarsgruppXpath = String.format("//li[div[h3[div[contains(text(), '%s')]]]]//div[contains(., 'Users')]", gruppText);
+//        WebElement usersUndersvarsgrupp = getElementSafely(usersUndersvarsgruppXpath, driver, wait);
+
 //        //admin try to expand Användare under Svarsgrupp Node
 //        String usersExpandUnderSvarsgruppXpath = String.format("//li[div[h3[div[contains(text(), '%s')]]]]//div[contains(., 'Users')]//div[img[@alt ='Expandera']]", gruppText);
 //        WebElement usersExpandUnderSvarsgrupp = getElementSafely(usersExpandUnderSvarsgruppXpath, driver, wait);
 //        wait.until(elementToBeClickable(usersExpandUnderSvarsgrupp));
 //        usersExpandUnderSvarsgrupp.click();
-//
-//        // admin clicks on the users link
-//        int userNr = 1;
-//        String svarsgruppUsersLinkXpath = String.format("//li[div[h3[div[contains(text(), '%s')]]]]//div[contains(., 'Users')]/../ul//a[span[@class = 'overview-link-text ng-binding' and @title]]", gruppText);
-//        List<WebElement> svarsgruppUsersLinkList = getElementsSafely(svarsgruppUsersLinkXpath, driver, wait);
-//        WebElement svarsgruppUsersLink = svarsgruppUsersLinkList.get(userNr-1);
-//
-//        wait.until(elementToBeClickable(svarsgruppUsersLink));
-//        svarsgruppUsersLink.click();
-//
-//        // Admin changes name
-//        String firstNameInputXpath = String.format("//input[@id = 'change-firstname-id']");
-//        WebElement firstNameInput = getElementSafely(firstNameInputXpath, driver, wait);
-//        firstNameInput.sendKeys(Keys.chord(Keys.CONTROL, "a"),"newSara");
-//
-//        String lastNameInputXpath = String.format("//input[@id = 'change-lastname-id']");
-//        WebElement lastNameInput = getElementSafely(lastNameInputXpath, driver, wait);
-//        lastNameInput.sendKeys(Keys.chord(Keys.CONTROL, "a"),"newVickman");
-//
-//
-//        // COMPANY_ADMIN
-//        String admOrNotXpath = String.format("//label[input[@type = 'radio' and @value = 'USER']]");
-//        WebElement admOrNot = getElementSafely(admOrNotXpath, driver, wait);
-//        wait.until(elementToBeClickable(admOrNot));
-//        admOrNot.click();
-//
-////
-////        String saveXpath = String.format("//input[@id = 'save-user-id']");
-////        WebElement saveList = getElementSafely(saveXpath, driver, wait);
-////        wait.until(elementToBeClickable(saveList));
-////        saveList.click();
-////
-//        driver.navigate().back();
 
 
-        // Create a new instance of the Firefox driver
-        WebDriver driver = new FirefoxDriver();
 
-        // wait for the server to render all the element
-        WebDriverWait wait = new WebDriverWait(driver, 10);
-
-
-            // visit the site
-            driver.navigate().to("https://www.google.se");
-        File scrFile = ((TakesScreenshot)driver).getScreenshotAs(OutputType.FILE);
-// Now you can do whatever you need to do with it, for example copy somewhere
-        try {
-            FileUtils.copyFile(scrFile, new File("screenshots/first.png"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-
-        //        File screenShotFile = underSvarsgrupp.get(0).getScreenshotAs(OutputType.FILE);
-//// Now you can do whatever you need to do with it, for example copy somewhere
-//        try {
-//            FileUtils.copyFile(screenShotFile, new File("/home/poonam/Code/projects/Thesis/ProjectKontor/screenshots"));
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
 
     }
 

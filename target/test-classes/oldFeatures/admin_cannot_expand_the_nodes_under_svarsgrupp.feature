@@ -9,7 +9,7 @@ Feature: Admin cannot expand the nodes under Svarsgrupp
     And Admin clicks on Start
     And Admin clicks on tab Växelöversikt
 
-  Scenario Outline: Verify that you can not expand Vid maximal kölängd/kötid
+  Scenario Outline: Verify that you can not expand the nodes
     Given Admin is checking Svarsgrupp node nr <nodeNr>
     And Admin expands Svarsgrupp
     When Admin tries to expand <nodeUnderSvarsgrupp>

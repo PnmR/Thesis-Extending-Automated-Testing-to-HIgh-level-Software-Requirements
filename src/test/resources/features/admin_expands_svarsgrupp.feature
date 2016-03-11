@@ -8,8 +8,12 @@ Feature: Admin expands Svarsgrupp
     And Admin goes to Admin Web Ab section
     And Admin clicks on Start
 
-  Scenario: Svarsgrupp node nr 1
+  Scenario Outline: Given Svarsgrupp node nr
     Given Admin clicks on tab Växelöversikt
-    And Admin is checking Svarsgrupp node nr 1
+    And Admin is checking Svarsgrupp node nr <svarsgruppNodeNr>
     When Admin expands Svarsgrupp
     Then For this node, Users logged in is visible
+    Examples:
+      | svarsgruppNodeNr |
+      | 1                |
+      | 2                |

@@ -21,6 +21,7 @@ import java.util.regex.Pattern;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.not;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.openqa.selenium.support.ui.ExpectedConditions.*;
@@ -50,7 +51,6 @@ public class Steps {
         driver.navigate().to(website);
 
         takeNSaveScreenshots("screenshots/WebsiteFirstLook.png");
-
     }
 
     @When("^Admin goes to Admin Web Ab section$")
@@ -62,6 +62,7 @@ public class Steps {
         wait.until(elementToBeClickable(adminTab));
         adminTab.click();
 
+        takeNSaveScreenshots(String.format("screenshots/%s.png", "Admin Web Ab section"));
     }
 
     @When("^Admin clicks on Start")
@@ -71,6 +72,7 @@ public class Steps {
         wait.until(elementToBeClickable(startMenu));
         startMenu.click();
 
+        takeNSaveScreenshots(String.format("screenshots/%s.png", "After clicking on start"));
     }
 
     @Then("^([\\wöåä]+) tab should be visible$")
@@ -80,16 +82,18 @@ public class Steps {
         WebElement tab = getElementSafely(tabXpath, driver, wait);
 
         assertThat(tab.isDisplayed(), is(equalTo(Boolean.TRUE)));
-
     }
 
     @When("^Admin clicks on tab ([\\wåöä]+)$")
     public void adminClicksOnTab(String tabName) throws Throwable {
         String tabXpath = String.format("//a[strong[contains(text(),'Växelöversikt') and not(@disabled)]]");
         WebElement tab = getElementSafely(tabXpath, driver, wait);
+        // sometimes the webelement although are visible not ready to be clicked
         wait.until(elementToBeClickable(tab));
+
         tab.click();
 
+        takeNSaveScreenshots(String.format("screenshots/%s.png", tabName + "section"));
     }
 
     @Then("^Tab Växelöversikt expanded")
@@ -98,6 +102,7 @@ public class Steps {
         WebElement expandedTab = getElementSafely(expandedTabXpath, driver, wait);
         assertThat(expandedTab.isDisplayed(), is(equalTo(Boolean.TRUE)));
 
+        takeNSaveScreenshots(String.format("screenshots/%s.png", "expandedVäxelöversikt"));
     }
 
     @Then("^Admin Web AB tree structure is shown$")
@@ -106,7 +111,6 @@ public class Steps {
         List<WebElement> adminTree = getElementsSafely(adminTreeXpath, driver, wait);
 
         assertThat(adminTree.size(), is(greaterThan(1))); // checks if there are more than one li element
-
     }
 
     private int gruppItemNum;
@@ -119,13 +123,77 @@ public class Steps {
     @When("^Admin expands Users$")
     public void adminExpandsUsers() throws Throwable {
         String userXpandXpath = String.format("//div[h3[div[contains(text(), 'Users') and @class='ng-binding']]]//div/img[@alt = 'Expandera']");
-
         WebElement userXpand = getElementSafely(userXpandXpath, driver, wait);
-
         wait.until(elementToBeClickable(userXpand));
         userXpand.click();
+
+        takeNSaveScreenshots(String.format("screenshots/%s.png", "expandedUsers"));
     }
 
+    @Then("^All Users are listed with name$")
+    public void allUsersAreListedWithName() throws Throwable {
+        String usersXpath = String.format("//li[@class = 'overview-row last-child']/div/a[@class = 'overview-link-sep ng-scope']/span[@class ='overview-link-text ng-binding'  and @title and text()] ");
+        List<WebElement> usersList = getElementsSafely(usersXpath, driver, wait);
+        for (WebElement user : usersList) {
+            String usersNumNameRole = user.getText();
+            // extracting only name from the whole text- Maria Niskanen  (0706554610, 060171501) (adm)
+            String usersName = usersNumNameRole.substring(0, usersNumNameRole.indexOf("("));
+
+            assertThat(usersName.isEmpty(), is(equalTo(Boolean.FALSE)));
+        }
+    }
+
+    @Then("^All Users are listed with fixednumber$")
+    public void allUsersAreListedWithFixednumber() throws Throwable {
+        String usersXpath = String.format("//li[@class = 'overview-row last-child']/div/a[@class = 'overview-link-sep ng-scope']/span[@class ='overview-link-text ng-binding'  and @title and text()] ");
+        List<WebElement> usersList = getElementsSafely(usersXpath, driver, wait);
+        for (WebElement user : usersList) {
+            String usersNumNameRole = user.getText();
+
+            // extracting only phone number from the whole text- Maria Niskanen  (0706554610, 060171501) (adm)
+            String usersFixedNumberText = usersNumNameRole.substring(usersNumNameRole.indexOf("(") + 1, usersNumNameRole.indexOf(")"));
+
+            // sometimes there might be more than one number listed separated by comma
+            String[] usersFixedNumberList = usersFixedNumberText.split(",");
+
+            for (String usersFixedNumber : usersFixedNumberList) {
+                // removing leading and trailing white space
+                usersFixedNumber = usersFixedNumber.trim();
+
+                assertThat(isInteger(usersFixedNumber), is(equalTo(Boolean.TRUE)));
+            }
+        }
+
+    }
+
+    @Then("^All Users are listed with adm or not$")
+    public void allUsersAreListedWithAdmOrNot() throws Throwable {
+        String usersXpath = String.format("//li[@class = 'overview-row last-child']/div/a[@class = 'overview-link-sep ng-scope']/span[@class ='overview-link-text ng-binding'  and @title and text()] ");
+        List<WebElement> usersList = getElementsSafely(usersXpath, driver, wait);
+        for (WebElement user : usersList) {
+            String usersNumNameRole = user.getText();
+            String usersRole;
+            // extracting only "adm" inside second parenthesis from the whole text- Maria Niskanen  (0706554610, 060171501) (adm)
+            // if the user is not adm then there will not be second parenthesis which is why that may throw StringIndexOutOfBoundsException
+            try {
+                usersRole = usersNumNameRole.substring(usersNumNameRole.indexOf("(", usersNumNameRole.indexOf("(") + 1) + 1, usersNumNameRole.indexOf(")", usersNumNameRole.indexOf(")") + 1));
+            } catch (StringIndexOutOfBoundsException e) {
+                usersRole = "user"; // if the user is not adm then it is user
+            }
+
+            assertThat(usersRole.isEmpty(), is(equalTo(Boolean.FALSE)));
+        }
+    }
+
+    @Then("^All Users are listed with Inloggad/Ej inloggad$")
+    public void allUsersAreListedWithInloggadEjInloggad() throws Throwable {
+        String usersXpath = String.format("//li[@class = 'overview-row last-child']/div/a[@class = 'overview-link-sep ng-scope']/..//span[@class = 'ng-scope' and img] ");
+        List<WebElement> usersList = getElementsSafely(usersXpath, driver, wait);
+        for (WebElement user : usersList) {
+            String usersLogStatus = user.getText();
+            assertThat(usersLogStatus.isEmpty(), is(equalTo(Boolean.FALSE)));
+        }
+    }
 
     //@Then ("^Under Admin Web AB, all ([A-z]+(?:er|ar)) are shown$")
     @Then("^Under Admin Web AB, all ([A-zöåä]+) are shown$")
@@ -137,13 +205,15 @@ public class Steps {
             gruppXpath = String.format("//div[contains(text(), '%s') and @class='ng-binding']", grupp);
         }
         List<WebElement> gruppList = getElementsSafely(gruppXpath, driver, wait);
-        int displayedElementUnderGrupp = 0;
+
+        //counting total number of grupp entries displayed
+        int displayedGruppEntries = 0;
         for (WebElement webEl : gruppList) {
             if (webEl.isDisplayed()) {
-                displayedElementUnderGrupp++;
+                displayedGruppEntries++;
             }
         }
-        assertThat(displayedElementUnderGrupp, is(equalTo(gruppItemNum)));
+        assertThat(displayedGruppEntries, is(equalTo(gruppItemNum)));
 
     }
 
@@ -158,8 +228,7 @@ public class Steps {
             gruppListXpath = String.format("//div/h3/div[contains(text(), '%s') and @class='ng-binding']", grupp);
         }
         List<WebElement> gruppList = getElementsSafely(gruppListXpath, driver, wait);
-        gruppText = gruppList.get(nodeNum - 1).getText(); // index starts from 0
-
+        gruppText = gruppList.get(nodeNum - 1).getText(); // list index starts from 0
     }
 
     @Then("^For this node, (title|lock icon|link) is visible$")
@@ -177,9 +246,9 @@ public class Steps {
                 break;
         }
 
-        String itemXpath = String.format("//h3//div[contains(text(), '%s')]", gruppText);
+        String itemXpath = String.format("//h3//div[contains(text(), '%s')]", gruppText); // repeating part of Xpath
 
-        itemXpath.concat(partItemXpath);
+        itemXpath.concat(partItemXpath); // adding the unique rest part of Xpath
         WebElement nodeItem = getElementSafely(itemXpath, driver, wait);
 
         assertThat(nodeItem.isDisplayed(), is(equalTo(Boolean.TRUE)));
@@ -192,7 +261,10 @@ public class Steps {
         String itemXpath = String.format("//h3//div[contains(text(), '%s')]", gruppText);
         WebElement nodeItem = getElementSafely(itemXpath, driver, wait);
         String text = nodeItem.getText();
+
+        // extracting only text disregarding round bracket
         text = text.substring(text.indexOf('(') + 1, text.indexOf(')'));
+
         assertThat(isInteger(text), is(equalTo(Boolean.TRUE)));
         assertThat(nodeItem.isDisplayed(), is(equalTo(Boolean.TRUE)));
     }
@@ -204,6 +276,7 @@ public class Steps {
         WebElement xpand = getElementSafely(xpandXpath, driver, wait);
         wait.until(elementToBeClickable(xpand));
         xpand.click();
+        takeNSaveScreenshots(String.format("screenshots/%s.png", "expandedSvarsgrupp"));
     }
 
     @Then("^For this node, Users logged in is visible$")
@@ -220,6 +293,7 @@ public class Steps {
         WebElement usersExpandUnderSvarsgrupp = getElementSafely(usersExpandUnderSvarsgruppXpath, driver, wait);
         wait.until(elementToBeClickable(usersExpandUnderSvarsgrupp));
         usersExpandUnderSvarsgrupp.click();
+        takeNSaveScreenshots(String.format("screenshots/%s.png", "expandedSvarsgruppUser"));
     }
 
     @Then("^Users under Svarsgrupp expands$")
@@ -232,54 +306,59 @@ public class Steps {
                 displayedElementUnderSvarsgruppUsers++;
             }
         }
-        assertThat(displayedElementUnderSvarsgruppUsers, is(greaterThan(1)));
-
+        assertThat(displayedElementUnderSvarsgruppUsers, is(not(equalTo(0))));
     }
 
-    @Then("^Users nr (\\d+) is listed with name$")
-    public void usersNrIsListedWithName(int userNr) {
+    @Then("^Svarsgrupp Users nr (\\d+) is listed with name$")
+    public void svarsgruppUsersNrIsListedWithName(int userNr) {
         String numNameRoleOfSvarsgruppUsersXpath = String.format("//li[div[h3[div[contains(text(), '%s')]]]]//div[contains(., 'Users')]/../ul//span[@class = 'overview-link-text ng-binding' and @title]", gruppText);
         List<WebElement> numNameRoleOfSvarsgruppUsers = getElementsSafely(numNameRoleOfSvarsgruppUsersXpath, driver, wait);
         String usersNumNameRole = numNameRoleOfSvarsgruppUsers.get(userNr - 1).getText();
-        String usersName = usersNumNameRole.substring(userNr - 1, usersNumNameRole.indexOf("("));
+        // extracting only name from the whole text- Maria Niskanen  (0706554610, 060171501) (adm)
+        String usersName = usersNumNameRole.substring(0, usersNumNameRole.indexOf("("));
 
         assertThat(usersName.isEmpty(), is(equalTo(Boolean.FALSE)));
-
     }
 
-    @Then("^Users nr (\\d+) is listed with fixednumber$")
-    public void usersNrIsListedWithFixedNumber(int userNr) {
+    @Then("^Svarsgrupp Users nr (\\d+) is listed with fixednumber$")
+    public void svarsgruppUsersNrIsListedWithFixedNumber(int userNr) {
         String numNameRoleOfSvarsgruppUsersXpath = String.format("//li[div[h3[div[contains(text(), '%s')]]]]//div[contains(., 'Users')]/../ul//span[@class = 'overview-link-text ng-binding' and @title]", gruppText);
         List<WebElement> numNameRoleOfSvarsgruppUsers = getElementsSafely(numNameRoleOfSvarsgruppUsersXpath, driver, wait);
         String usersNumNameRole = numNameRoleOfSvarsgruppUsers.get(userNr - 1).getText();
+        // extracting only phone number from the whole text- Maria Niskanen  (0706554610, 060171501) (adm)
         String usersFixedNumberText = usersNumNameRole.substring(usersNumNameRole.indexOf("(") + 1, usersNumNameRole.indexOf(")"));
+
+        // sometimes there might be more than one number listed separated by comma
         String[] usersFixedNumberList = usersFixedNumberText.split(",");
 
         for (String usersFixedNumber : usersFixedNumberList) {
-            usersFixedNumber = usersFixedNumber.trim();
+            usersFixedNumber = usersFixedNumber.trim();  // removing leading and trailing white space
             assertThat(isInteger(usersFixedNumber), is(equalTo(Boolean.TRUE)));
         }
 
     }
 
-    @Then("^Users nr (\\d+) is listed with adm or not$")
-    public void usersNrIsListedWithAdmOrNot(int userNr) {
+    @Then("^Svarsgrupp Users nr (\\d+) is listed with adm or not$")
+    public void svarsgruppUsersNrIsListedWithAdmOrNot(int userNr) {
         String numNameRoleOfSvarsgruppUsersXpath = String.format("//li[div[h3[div[contains(text(), '%s')]]]]//div[contains(., 'Users')]/../ul//span[@class = 'overview-link-text ng-binding' and @title]", gruppText);
         List<WebElement> numNameRoleOfSvarsgruppUsers = getElementsSafely(numNameRoleOfSvarsgruppUsersXpath, driver, wait);
         String usersNumNameRole = numNameRoleOfSvarsgruppUsers.get(userNr - 1).getText();
-        String usersAdm;
+        String usersRole;
+
+        // extracting only "adm" inside second parenthesis from the whole text- Maria Niskanen  (0706554610, 060171501) (adm)
+        // if the user is not adm then there will not be second parenthesis which is why that may throw StringIndexOutOfBoundsException
         try {
-            usersAdm = usersNumNameRole.substring(usersNumNameRole.indexOf("(", usersNumNameRole.indexOf("(") + 1) + 1, usersNumNameRole.indexOf(")", usersNumNameRole.indexOf(")") + 1));
+            usersRole = usersNumNameRole.substring(usersNumNameRole.indexOf("(", usersNumNameRole.indexOf("(") + 1) + 1, usersNumNameRole.indexOf(")", usersNumNameRole.indexOf(")") + 1));
         } catch (StringIndexOutOfBoundsException e) {
-            usersAdm = "user";
+            usersRole = "user";
         }
 
-        assertThat(usersAdm.isEmpty(), is(equalTo(Boolean.FALSE)));
+        assertThat(usersRole.isEmpty(), is(equalTo(Boolean.FALSE)));
 
     }
 
-    @Then("^Users nr (\\d+) is listed with Inloggad/Ej inloggad$")
-    public void usersNrIsListedWithInloggadEjInloggad(int userNr) {
+    @Then("^Svarsgrupp Users nr (\\d+) is listed with Inloggad/Ej inloggad$")
+    public void svarsgruppUsersNrIsListedWithInloggadEjInloggad(int userNr) {
         String logStatusOfSvarsgruppUsersXpath = String.format("//li[div[h3[div[contains(text(), '%s')]]]]//div[contains(., 'Users')]/../ul//span[@class = 'ng-binding ng-scope']", gruppText);
         List<WebElement> logStatusOfSvarsgruppUsers = getElementsSafely(logStatusOfSvarsgruppUsersXpath, driver, wait);
         String usersLogStatus = logStatusOfSvarsgruppUsers.get(userNr - 1).getText();
@@ -288,9 +367,9 @@ public class Steps {
     }
 
 
-    String gruppTitleText, gruppMobNum;
+    private String gruppTitleText, gruppMobNum;
 
-    @When("^Admin clicks on the link$")
+    @When("^Admin clicks on the [A-z]+ link$")
     public void adminClicksOnTheLink() throws Throwable {
         String titleXpath;
 
@@ -309,6 +388,8 @@ public class Steps {
         wait.until(elementToBeClickable(gruppTitle));
         gruppTitle.click();
 
+        takeNSaveScreenshots(String.format("screenshots/%s.png", gruppTitleText + "forwardedpage"));
+
     }
 
     @Then("^Admin gets forwarded to correct page$")
@@ -324,7 +405,7 @@ public class Steps {
             gruppTitleText = gruppTitleText.substring(0, gruppTitleText.indexOf("(")).trim();
             forwardedTitleXpath = "//div[@class= 'tsr-row ng-scope']/div/h1[@class = 'ng-binding']";
         }
-
+        //discarding quotation mark
         Pattern pattern = Pattern.compile("\"(.*?)\"");
 
         WebElement forwardedTitle = getElementSafely(forwardedTitleXpath, driver, wait);
@@ -333,12 +414,19 @@ public class Steps {
         if (matcher.find()) {
             gruppTitleText = matcher.group(1);
         }
-        assertThat(forwardedTitle.getText(), is(equalTo(gruppTitleText)));
+
+        // if the name is longer than 20 character the website neglects character after 20th and replace with three dots
+        String forwardedTitleText = forwardedTitle.getText();
+        if (forwardedTitleText.length() > 20) {
+            forwardedTitleText = forwardedTitleText.substring(0, 20);
+            forwardedTitleText = forwardedTitleText.concat("...");
+        }
+
+        assertThat(forwardedTitleText, is(equalTo(gruppTitleText)));
 //        assertThat(forwardedMobNumList.get(0).getText(), is(equalTo(gruppMobNum)));
     }
 
     private String changedGruppName;
-
     @When("^Admin changes name to (.+)$")
     public void adminChangesNameTo(String newName) throws Throwable {
         // click on bytNamn
@@ -346,6 +434,8 @@ public class Steps {
         WebElement bytNamn = getElementSafely(bytNamnXpath, driver, wait);
         wait.until(elementToBeClickable(bytNamn));
         bytNamn.click();
+
+        takeNSaveScreenshots(String.format("screenshots/%s.png", "changeNamepage"));
 
         // writing on the input
         String titleInputXpath = "//h1[contains(@id, 'change-')]/span/input[contains(@name, 'Name')]";
@@ -357,30 +447,29 @@ public class Steps {
         driver.findElement(By.xpath("//div[@class = 'tsr-header-main']")).click(); //clicking outside to save the change
     }
 
-    @Then("^Admin verifies change$")
-    public void adminVerifiesChange() throws Throwable {
+    @Then("^Admin verifies if the name is changed$")
+    public void adminVerifiesIfTheNameIsChanged() throws Throwable {
+
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         // go back to the page
         driver.navigate().back();
 
         String gruppTitleXpath = String.format("//h3//div[contains(text(), '%s')]/../a/span[contains(@class , 'ng-binding')]", gruppText);
         String gruppTitle = getElementSafely(gruppTitleXpath, driver, wait).getText();
-        Pattern pattern = Pattern.compile("\"(.*?)\"");
-        Matcher matcher = pattern.matcher(gruppTitle);
-        if (matcher.find()) {
-            gruppTitle = matcher.group(1);
-        }
-        assertThat(gruppTitle, is(equalTo(changedGruppName)));
 
     }
 
     private int listSizeBeforeTryingToExpand, listSizeAfterTryingToExpand;
-
     @When("^Admin tries to expand ([A-zöåä /]+)$")
     public void adminTriesToExpand(String expandText) throws Throwable {
         String underGruppXpath = String.format("//ul[contains(@data-title,'%s')]/li/ul//li", gruppText);
         List<WebElement> underGrupp = getElementsSafely(underGruppXpath, driver, wait);
         listSizeBeforeTryingToExpand = underGrupp.size();
-        //click inga bla bla
+
         String circleUnderGruppXpath = String.format("//ul[contains(@data-title,'%s')]//li/div[contains(. , '%s')]/span[@class = 'circle']", gruppText, expandText);
         WebElement circleUnderGrupp = getElementSafely(circleUnderGruppXpath, driver, wait);
         circleUnderGrupp.click();
@@ -388,8 +477,8 @@ public class Steps {
 
     }
 
-    @Then("^It does not expand$")
-    public void itDoesNotExpand() throws Throwable {
+    @Then("^[A-zåöä /]+ does not expand$")
+    public void doesNotExpand() throws Throwable {
         assertThat(listSizeAfterTryingToExpand, is(equalTo(listSizeBeforeTryingToExpand)));
     }
 
@@ -400,30 +489,32 @@ public class Steps {
         WebElement svarsgruppUsersLink = svarsgruppUsersLinkList.get(userNr - 1);
         wait.until(elementToBeClickable(svarsgruppUsersLink));
         svarsgruppUsersLink.click();
-
+        takeNSaveScreenshots(String.format("screenshots/%s.png", "Svarsgrupp Users nr link forward"));
     }
 
     private Map<String, String> changes;
-
     @When("^Admin changes Svarsgrupp user settings:$")
     public void adminChangesSvarsgruppUserSettings(Map<String, String> changes) throws Throwable {
         this.changes = changes;
 
+        // changing first name
         String firstNameInputXpath = String.format("//input[@id = 'change-firstname-id']");
         WebElement firstNameInput = getElementSafely(firstNameInputXpath, driver, wait);
         wait.until(visibilityOf(firstNameInput));
         firstNameInput.sendKeys(Keys.chord(Keys.CONTROL, "a"), changes.get("new first name"));
 
+        //changing last name
         String lastNameInputXpath = String.format("//input[@id = 'change-lastname-id']");
         WebElement lastNameInput = getElementSafely(lastNameInputXpath, driver, wait);
         lastNameInput.sendKeys(Keys.chord(Keys.CONTROL, "a"), changes.get("new last name"));
 
+        // changing adm or not
         String admOrNotXpath = String.format("//label[input[@type = 'radio' and @value = '%s']]", changes.get("new adm or not"));
         WebElement admOrNot = getElementSafely(admOrNotXpath, driver, wait);
         wait.until(elementToBeClickable(admOrNot));
         admOrNot.click();
 
-
+        //saving the changes
         String saveXpath = String.format("//input[@id = 'save-user-id']");
         WebElement saveList = getElementSafely(saveXpath, driver, wait);
         wait.until(elementToBeClickable(saveList));
@@ -447,16 +538,25 @@ public class Steps {
 
         String numNameRoleOfSvarsgruppUsersXpath = String.format("//li[div[h3[div[contains(text(), '%s')]]]]//div[contains(., 'Users')]/../ul//span[@class = 'overview-link-text ng-binding' and @title]", gruppText);
         List<WebElement> numNameRoleOfSvarsgruppUsers = getElementsSafely(numNameRoleOfSvarsgruppUsersXpath, driver, wait);
+
+        // extracting the text which enlists users number, name and role
         String usersNumNameRole = numNameRoleOfSvarsgruppUsers.get(userNr - 1).getText();
-        String usersFullName = usersNumNameRole.substring(userNr - 1, usersNumNameRole.indexOf("("));
+
+        // extracting only full name from the text- Maria Niskanen  (0706554610, 060171501) (adm)
+        String usersFullName = usersNumNameRole.substring(0, usersNumNameRole.indexOf("("));
+
+        // splitting full name into first and last name
         String[] name = usersFullName.split(" ");
         String firstName = name[0];
         String lastName = name[1];
+
+        // extracting only "adm" inside second parenthesis from the whole text- Maria Niskanen  (0706554610, 060171501) (adm)
+        // if the user is not adm then there will not be second parenthesis which is why that may throw StringIndexOutOfBoundsException
         String usersAdm;
         try {
             usersAdm = usersNumNameRole.substring(usersNumNameRole.indexOf("(", usersNumNameRole.indexOf("(") + 1) + 1, usersNumNameRole.indexOf(")", usersNumNameRole.indexOf(")") + 1));
         } catch (StringIndexOutOfBoundsException e) {
-            usersAdm = "user";
+            usersAdm = "user"; // if the user is not adm then it is user
         }
 
         String admOrNot = "";
@@ -476,6 +576,8 @@ public class Steps {
 
     public Boolean isInteger(String s) {
         try {
+            // using Long so that it would not throw NumberFormatException when the number is too large
+            // especially for the phone number including also the country code
             Long.parseLong(s);
             return Boolean.TRUE;
         } catch (NumberFormatException e) {
@@ -483,6 +585,14 @@ public class Steps {
         }
     }
 
+
+    /**
+     * method to wait before actually capturing the element
+     * @param myXpathArg Xpath to the element
+     * @param driver driver used
+     * @param wait wait used
+     * @return WebElement element from the xpath
+     */
     public static WebElement getElementSafely(String myXpathArg, WebDriver driver, WebDriverWait wait) {
         wait.until(presenceOfElementLocated(By.xpath(myXpathArg)));
         try {
@@ -494,8 +604,14 @@ public class Steps {
 
     }
 
-
-    public static List<WebElement> getElementsSafely(String myXpathArg, WebDriver driver, WebDriverWait wait) {
+    /**
+     * method to wait before actually capturing the elements
+     * @param myXpathArg Xpath to the list of elements
+     * @param driver driver used
+     * @param wait wait used
+     * @return List<WebElement> List of elements from the xpath
+     */
+        public static List<WebElement> getElementsSafely(String myXpathArg, WebDriver driver, WebDriverWait wait) {
         wait.until(presenceOfAllElementsLocatedBy(By.xpath(myXpathArg)));
         try {
             Thread.sleep(500);
@@ -506,6 +622,10 @@ public class Steps {
 
     }
 
+    /**
+     * method to take screenshot and save them
+     * @param fileName path where screenshot is saved
+     */
     public void takeNSaveScreenshots(String fileName) {
         try {
             Thread.sleep(500);
@@ -522,22 +642,19 @@ public class Steps {
     }
 
     @After()
+    /**
+     * method to take screenshot when a scenario is failed and embed it to the report
+     * method also closes the browser
+     * @param scenario current scenario
+     */
     public void tearDown(Scenario scenario) {
         if (scenario.isFailed()) {
             // Take a screenshot...
             final byte[] screenshot = ((TakesScreenshot) driver).getScreenshotAs(OutputType.BYTES);
-            scenario.embed(screenshot, "image/png"); // ... and embed it in the report.
+            scenario.embed(screenshot, "image/png"); // and embed it in the report.
         }
 
         driver.quit();
     }
-
-    @After()
-    public void closeBrowser() {
-
-        // close the browser
-        driver.quit();
-    }
-
 
 }

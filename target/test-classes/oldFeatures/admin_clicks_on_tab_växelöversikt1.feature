@@ -13,13 +13,12 @@ Feature: Admin clicks on tab Växelöversikt
     Then Tab Växelöversikt expanded
     And Admin Web AB tree structure is shown
 
-  Scenario: Checking if all Menystyrning are shown
-    Given There are 3 Menystyrning
-    When Admin clicks on tab Växelöversikt
-    Then Under Admin Web AB, all Menystyrning are shown
 
-  Scenario: Checking if all Svarsgrupp are shown
-    Given There are 3 Svarsgrupp
+  Scenario Outline: There are given number of grupp entries
+    Given There are <total> <gruppInput>
     When Admin clicks on tab Växelöversikt
-    Then Under Admin Web AB, all Svarsgrupp are shown
-
+    Then Under Admin Web AB, all <gruppOutput> are shown
+    Examples:
+      | total | gruppInput   | gruppOutput  |
+      | 3     | Menystyrning | Menystyrning |
+      | 3     | Svarsgrupp   | Svarsgrupp   |
