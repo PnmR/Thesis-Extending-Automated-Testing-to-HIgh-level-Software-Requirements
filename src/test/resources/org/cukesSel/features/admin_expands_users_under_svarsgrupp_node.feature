@@ -16,10 +16,11 @@ Feature: Admin expands Users under Svarsgrupp node
     When Under Svarsgrupp node, Admin tries to expand Users
     Then Users under Svarsgrupp expands
     Examples:
-    |svarsgruppNodeNr|
-    |1               |
+      | svarsgruppNodeNr |
+      | 1                |
+      | 2                |
+      | 3                |
 
-@prob
   Scenario Outline: Given Svarsgrupp node nr and given Svarsgrupp Users node nr
     Given Admin is checking Svarsgrupp node nr <svarsgruppNodeNr>
     And Admin expands Svarsgrupp

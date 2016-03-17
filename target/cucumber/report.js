@@ -1,72 +1,22 @@
-$(document).ready(function() {var formatter = new CucumberHTML.DOMFormatter($('.cucumber-report'));formatter.uri("src/test/resources/features/admin_expands_users_under_svarsgrupp_node.feature");
+$(document).ready(function() {var formatter = new CucumberHTML.DOMFormatter($('.cucumber-report'));formatter.uri("src/test/resources/org/cukesSel/features/admin_clicks_on_start_of_admin _web _ab_section.feature");
 formatter.feature({
   "line": 1,
-  "name": "Admin expands Users under Svarsgrupp node",
-  "description": "In order to see which users are logged in under a Svarsgrupp\nAs a Admin\nI want to Admin expands Users under Svarsgrupp node",
-  "id": "admin-expands-users-under-svarsgrupp-node",
+  "name": "Admin clicks on Start of Admin Web Ab section",
+  "description": "In order to be able to navigate through different parts of Company start Page\nAs an Admin\nI want to click on start of Admin Web Ab section",
+  "id": "admin-clicks-on-start-of-admin-web-ab-section",
   "keyword": "Feature"
 });
-formatter.scenarioOutline({
-  "line": 13,
-  "name": "Given Svarsgrupp node nr",
-  "description": "",
-  "id": "admin-expands-users-under-svarsgrupp-node;given-svarsgrupp-node-nr",
-  "type": "scenario_outline",
-  "keyword": "Scenario Outline"
-});
-formatter.step({
-  "line": 14,
-  "name": "Admin is checking Svarsgrupp node nr \u003csvarsgruppNodeNr\u003e",
-  "keyword": "Given "
-});
-formatter.step({
-  "line": 15,
-  "name": "Admin expands Svarsgrupp",
-  "keyword": "And "
-});
-formatter.step({
-  "line": 16,
-  "name": "Under Svarsgrupp node, Admin tries to expand Users",
-  "keyword": "When "
-});
-formatter.step({
-  "line": 17,
-  "name": "Users under Svarsgrupp expands",
-  "keyword": "Then "
-});
-formatter.examples({
-  "line": 18,
-  "name": "",
-  "description": "",
-  "id": "admin-expands-users-under-svarsgrupp-node;given-svarsgrupp-node-nr;",
-  "rows": [
-    {
-      "cells": [
-        "svarsgruppNodeNr"
-      ],
-      "line": 19,
-      "id": "admin-expands-users-under-svarsgrupp-node;given-svarsgrupp-node-nr;;1"
-    },
-    {
-      "cells": [
-        "1"
-      ],
-      "line": 20,
-      "id": "admin-expands-users-under-svarsgrupp-node;given-svarsgrupp-node-nr;;2"
-    }
-  ],
-  "keyword": "Examples"
-});
 formatter.before({
-  "duration": 4116711050,
+  "duration": 3568278859,
   "status": "passed"
 });
-formatter.background({
+formatter.scenario({
   "line": 6,
-  "name": "",
+  "name": "Admin is in the Admin Web Ab section",
   "description": "",
-  "type": "background",
-  "keyword": "Background"
+  "id": "admin-clicks-on-start-of-admin-web-ab-section;admin-is-in-the-admin-web-ab-section",
+  "type": "scenario",
+  "keyword": "Scenario"
 });
 formatter.step({
   "line": 7,
@@ -81,11 +31,22 @@ formatter.step({
 formatter.step({
   "line": 9,
   "name": "Admin clicks on Start",
-  "keyword": "And "
+  "keyword": "When "
 });
 formatter.step({
-  "line": 10,
-  "name": "Admin clicks on tab Växelöversikt",
+  "comments": [
+    {
+      "line": 10,
+      "value": "#    Then Company listed #prob"
+    }
+  ],
+  "line": 11,
+  "name": "Växelöversikt tab should be visible",
+  "keyword": "Then "
+});
+formatter.step({
+  "line": 12,
+  "name": "Logg tab should be visible",
   "keyword": "And "
 });
 formatter.match({
@@ -98,107 +59,51 @@ formatter.match({
   "location": "Steps.adminVisits(String)"
 });
 formatter.result({
-  "duration": 2285698154,
+  "duration": 1917719513,
   "status": "passed"
 });
 formatter.match({
   "location": "Steps.adminGoesToAdminWebABSection()"
 });
 formatter.result({
-  "duration": 3002544052,
+  "duration": 2925815524,
   "status": "passed"
 });
 formatter.match({
   "location": "Steps.adminClicksOnStart()"
 });
 formatter.result({
-  "duration": 1699054468,
+  "duration": 1491741274,
   "status": "passed"
 });
 formatter.match({
   "arguments": [
     {
       "val": "Växelöversikt",
-      "offset": 20
+      "offset": 0
     }
   ],
-  "location": "Steps.adminClicksOnTab(String)"
+  "location": "Steps.tabShouldBeVisible(String)"
 });
 formatter.result({
-  "duration": 7390345483,
+  "duration": 566173258,
   "status": "passed"
-});
-formatter.scenario({
-  "line": 20,
-  "name": "Given Svarsgrupp node nr",
-  "description": "",
-  "id": "admin-expands-users-under-svarsgrupp-node;given-svarsgrupp-node-nr;;2",
-  "type": "scenario",
-  "keyword": "Scenario Outline"
-});
-formatter.step({
-  "line": 14,
-  "name": "Admin is checking Svarsgrupp node nr 1",
-  "matchedColumns": [
-    0
-  ],
-  "keyword": "Given "
-});
-formatter.step({
-  "line": 15,
-  "name": "Admin expands Svarsgrupp",
-  "keyword": "And "
-});
-formatter.step({
-  "line": 16,
-  "name": "Under Svarsgrupp node, Admin tries to expand Users",
-  "keyword": "When "
-});
-formatter.step({
-  "line": 17,
-  "name": "Users under Svarsgrupp expands",
-  "keyword": "Then "
 });
 formatter.match({
   "arguments": [
     {
-      "val": "Svarsgrupp",
-      "offset": 18
-    },
-    {
-      "val": "1",
-      "offset": 37
+      "val": "Logg",
+      "offset": 0
     }
   ],
-  "location": "Steps.adminCheckingNodeNr(String,int)"
+  "location": "Steps.tabShouldBeVisible(String)"
 });
 formatter.result({
-  "duration": 573986621,
-  "status": "passed"
-});
-formatter.match({
-  "location": "Steps.adminExpandsSvarsgrupp()"
-});
-formatter.result({
-  "duration": 1652196398,
-  "status": "passed"
-});
-formatter.match({
-  "location": "Steps.whenAdminTriesToExpandAnvändareUnderSvarsgruppNode()"
-});
-formatter.result({
-  "duration": 1901170152,
-  "status": "passed"
-});
-formatter.match({
-  "location": "Steps.thenUsersUnderSvarsgruppExpands()"
-});
-formatter.result({
-  "duration": 925487587,
+  "duration": 539237416,
   "status": "passed"
 });
 formatter.after({
-  "duration": 77310912,
+  "duration": 74664826,
   "status": "passed"
 });
 });

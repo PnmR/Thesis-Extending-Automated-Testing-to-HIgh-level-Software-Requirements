@@ -31,18 +31,14 @@ import static org.openqa.selenium.support.ui.ExpectedConditions.*;
  */
 public class Steps {
 
-    // Create a new instance of the Firefox driver
-    private final WebDriver driver = new FirefoxDriver();
+    // passing the driver instance from Hooks
+    private final WebDriver driver = Hooks.driver;
 
-    // wait for the server to render all the element
-    private WebDriverWait wait = new WebDriverWait(driver, 10);
+    // passing the waiting variable from Hooks
+    private WebDriverWait wait = Hooks.wait;
 
-    private Scenario scenario;
-
-    @Before
-    public void before(Scenario scenario) {
-        this.scenario = scenario;
-    }
+    // passing scenario from Hooks
+    private Scenario scenario = Hooks.scenario;
 
     @Given("^Admin visits (https?:\\/\\/.+)$")
     public void adminVisits(String website) throws Throwable {
@@ -50,36 +46,36 @@ public class Steps {
         // visit the site
         driver.navigate().to(website);
 
-        takeNSaveScreenshots("screenshots/WebsiteFirstLook.png");
+        Support.takeNSaveScreenshots("screenshots/WebsiteFirstLook.png");
     }
 
     @When("^Admin goes to Admin Web Ab section$")
     public void adminGoesToAdminWebABSection() throws Throwable {
-        WebElement searchInput = getElementSafely("//*[@id ='search-all-company-id']", driver, wait);
+        WebElement searchInput = Support.getElementSafely("//*[@id ='search-all-company-id']", driver, wait);
         searchInput.sendKeys("Admin Web Ab"); // writing into the form
 
-        WebElement adminTab = getElementSafely("//strong[contains(text(),'Admin Web AB')]", driver, wait);
+        WebElement adminTab = Support.getElementSafely("//strong[contains(text(),'Admin Web AB')]", driver, wait);
         wait.until(elementToBeClickable(adminTab));
         adminTab.click();
 
-        takeNSaveScreenshots(String.format("screenshots/%s.png", "Admin Web Ab section"));
+        Support.takeNSaveScreenshots(String.format("screenshots/%s.png", "Admin Web Ab section"));
     }
 
     @When("^Admin clicks on Start")
     public void adminClicksOnStart() throws Throwable {
 
-        WebElement startMenu = getElementSafely("//a[@id= 'start-menu-id' and contains(.,'Start')]", driver, wait);
+        WebElement startMenu = Support.getElementSafely("//a[@id= 'start-menu-id' and contains(.,'Start')]", driver, wait);
         wait.until(elementToBeClickable(startMenu));
         startMenu.click();
 
-        takeNSaveScreenshots(String.format("screenshots/%s.png", "After clicking on start"));
+        Support.takeNSaveScreenshots(String.format("screenshots/%s.png", "After clicking on start"));
     }
 
     @Then("^([\\wöåä]+) tab should be visible$")
     public void tabShouldBeVisible(String tabArg) throws Throwable {
 
         String tabXpath = String.format("//a[strong[contains(text(),'%s')]]", tabArg);
-        WebElement tab = getElementSafely(tabXpath, driver, wait);
+        WebElement tab = Support.getElementSafely(tabXpath, driver, wait);
 
         assertThat(tab.isDisplayed(), is(equalTo(Boolean.TRUE)));
     }
@@ -87,28 +83,28 @@ public class Steps {
     @When("^Admin clicks on tab ([\\wåöä]+)$")
     public void adminClicksOnTab(String tabName) throws Throwable {
         String tabXpath = String.format("//a[strong[contains(text(),'Växelöversikt') and not(@disabled)]]");
-        WebElement tab = getElementSafely(tabXpath, driver, wait);
+        WebElement tab = Support.getElementSafely(tabXpath, driver, wait);
         // sometimes the webelement although are visible not ready to be clicked
         wait.until(elementToBeClickable(tab));
 
         tab.click();
 
-        takeNSaveScreenshots(String.format("screenshots/%s.png", tabName + "section"));
+        Support.takeNSaveScreenshots(String.format("screenshots/%s.png", tabName + "section"));
     }
 
     @Then("^Tab Växelöversikt expanded")
     public void tabVäxelöversiktExpanded() throws Throwable {
         String expandedTabXpath = String.format("//div[@class = 'company-overview ng-isolate-scope']");
-        WebElement expandedTab = getElementSafely(expandedTabXpath, driver, wait);
+        WebElement expandedTab = Support.getElementSafely(expandedTabXpath, driver, wait);
         assertThat(expandedTab.isDisplayed(), is(equalTo(Boolean.TRUE)));
 
-        takeNSaveScreenshots(String.format("screenshots/%s.png", "expandedVäxelöversikt"));
+        Support.takeNSaveScreenshots(String.format("screenshots/%s.png", "expandedVäxelöversikt"));
     }
 
     @Then("^Admin Web AB tree structure is shown$")
     public void adminWebAbTreeStructureIsShown() throws Throwable {
         String adminTreeXpath = String.format("//li[@class = 'overview-row last-child']");
-        List<WebElement> adminTree = getElementsSafely(adminTreeXpath, driver, wait);
+        List<WebElement> adminTree = Support.getElementsSafely(adminTreeXpath, driver, wait);
 
         assertThat(adminTree.size(), is(greaterThan(1))); // checks if there are more than one li element
     }
@@ -123,17 +119,17 @@ public class Steps {
     @When("^Admin expands Users$")
     public void adminExpandsUsers() throws Throwable {
         String userXpandXpath = String.format("//div[h3[div[contains(text(), 'Users') and @class='ng-binding']]]//div/img[@alt = 'Expandera']");
-        WebElement userXpand = getElementSafely(userXpandXpath, driver, wait);
+        WebElement userXpand = Support.getElementSafely(userXpandXpath, driver, wait);
         wait.until(elementToBeClickable(userXpand));
         userXpand.click();
 
-        takeNSaveScreenshots(String.format("screenshots/%s.png", "expandedUsers"));
+        Support.takeNSaveScreenshots(String.format("screenshots/%s.png", "expandedUsers"));
     }
 
     @Then("^All Users are listed with name$")
     public void allUsersAreListedWithName() throws Throwable {
         String usersXpath = String.format("//li[@class = 'overview-row last-child']/div/a[@class = 'overview-link-sep ng-scope']/span[@class ='overview-link-text ng-binding'  and @title and text()] ");
-        List<WebElement> usersList = getElementsSafely(usersXpath, driver, wait);
+        List<WebElement> usersList = Support.getElementsSafely(usersXpath, driver, wait);
         for (WebElement user : usersList) {
             String usersNumNameRole = user.getText();
             // extracting only name from the whole text- Maria Niskanen  (0706554610, 060171501) (adm)
@@ -146,7 +142,7 @@ public class Steps {
     @Then("^All Users are listed with fixednumber$")
     public void allUsersAreListedWithFixednumber() throws Throwable {
         String usersXpath = String.format("//li[@class = 'overview-row last-child']/div/a[@class = 'overview-link-sep ng-scope']/span[@class ='overview-link-text ng-binding'  and @title and text()] ");
-        List<WebElement> usersList = getElementsSafely(usersXpath, driver, wait);
+        List<WebElement> usersList = Support.getElementsSafely(usersXpath, driver, wait);
         for (WebElement user : usersList) {
             String usersNumNameRole = user.getText();
 
@@ -160,7 +156,7 @@ public class Steps {
                 // removing leading and trailing white space
                 usersFixedNumber = usersFixedNumber.trim();
 
-                assertThat(isInteger(usersFixedNumber), is(equalTo(Boolean.TRUE)));
+                assertThat(Support.isInteger(usersFixedNumber), is(equalTo(Boolean.TRUE)));
             }
         }
 
@@ -169,7 +165,7 @@ public class Steps {
     @Then("^All Users are listed with adm or not$")
     public void allUsersAreListedWithAdmOrNot() throws Throwable {
         String usersXpath = String.format("//li[@class = 'overview-row last-child']/div/a[@class = 'overview-link-sep ng-scope']/span[@class ='overview-link-text ng-binding'  and @title and text()] ");
-        List<WebElement> usersList = getElementsSafely(usersXpath, driver, wait);
+        List<WebElement> usersList = Support.getElementsSafely(usersXpath, driver, wait);
         for (WebElement user : usersList) {
             String usersNumNameRole = user.getText();
             String usersRole;
@@ -188,7 +184,7 @@ public class Steps {
     @Then("^All Users are listed with Inloggad/Ej inloggad$")
     public void allUsersAreListedWithInloggadEjInloggad() throws Throwable {
         String usersXpath = String.format("//li[@class = 'overview-row last-child']/div/a[@class = 'overview-link-sep ng-scope']/..//span[@class = 'ng-scope' and img] ");
-        List<WebElement> usersList = getElementsSafely(usersXpath, driver, wait);
+        List<WebElement> usersList = Support.getElementsSafely(usersXpath, driver, wait);
         for (WebElement user : usersList) {
             String usersLogStatus = user.getText();
             assertThat(usersLogStatus.isEmpty(), is(equalTo(Boolean.FALSE)));
@@ -204,7 +200,7 @@ public class Steps {
         } else {
             gruppXpath = String.format("//div[contains(text(), '%s') and @class='ng-binding']", grupp);
         }
-        List<WebElement> gruppList = getElementsSafely(gruppXpath, driver, wait);
+        List<WebElement> gruppList = Support.getElementsSafely(gruppXpath, driver, wait);
 
         //counting total number of grupp entries displayed
         int displayedGruppEntries = 0;
@@ -227,7 +223,7 @@ public class Steps {
         } else {
             gruppListXpath = String.format("//div/h3/div[contains(text(), '%s') and @class='ng-binding']", grupp);
         }
-        List<WebElement> gruppList = getElementsSafely(gruppListXpath, driver, wait);
+        List<WebElement> gruppList = Support.getElementsSafely(gruppListXpath, driver, wait);
         gruppText = gruppList.get(nodeNum - 1).getText(); // list index starts from 0
     }
 
@@ -249,7 +245,7 @@ public class Steps {
         String itemXpath = String.format("//h3//div[contains(text(), '%s')]", gruppText); // repeating part of Xpath
 
         itemXpath.concat(partItemXpath); // adding the unique rest part of Xpath
-        WebElement nodeItem = getElementSafely(itemXpath, driver, wait);
+        WebElement nodeItem = Support.getElementSafely(itemXpath, driver, wait);
 
         assertThat(nodeItem.isDisplayed(), is(equalTo(Boolean.TRUE)));
     }
@@ -259,13 +255,13 @@ public class Steps {
     public void forThisNodeNumberIsVisible() throws Throwable {
 
         String itemXpath = String.format("//h3//div[contains(text(), '%s')]", gruppText);
-        WebElement nodeItem = getElementSafely(itemXpath, driver, wait);
+        WebElement nodeItem = Support.getElementSafely(itemXpath, driver, wait);
         String text = nodeItem.getText();
 
         // extracting only text disregarding round bracket
         text = text.substring(text.indexOf('(') + 1, text.indexOf(')'));
 
-        assertThat(isInteger(text), is(equalTo(Boolean.TRUE)));
+        assertThat(Support.isInteger(text), is(equalTo(Boolean.TRUE)));
         assertThat(nodeItem.isDisplayed(), is(equalTo(Boolean.TRUE)));
     }
 
@@ -273,16 +269,16 @@ public class Steps {
     public void adminExpandsSvarsgrupp() throws Throwable {
 
         String xpandXpath = String.format("//div[h3[div[contains(text(),'%s') and @class='ng-binding']]]//div/img[@alt = 'Expandera']", gruppText);
-        WebElement xpand = getElementSafely(xpandXpath, driver, wait);
+        WebElement xpand = Support.getElementSafely(xpandXpath, driver, wait);
         wait.until(elementToBeClickable(xpand));
         xpand.click();
-        takeNSaveScreenshots(String.format("screenshots/%s.png", "expandedSvarsgrupp"));
+        Support.takeNSaveScreenshots(String.format("screenshots/%s.png", "expandedSvarsgrupp"));
     }
 
     @Then("^For this node, Users logged in is visible$")
     public void forThisNodeUsersloggedInIsVisible() throws Throwable {
         String usersUndersvarsgruppXpath = String.format("//li[div[h3[div[contains(text(), '%s')]]]]//div[contains(., 'Users')]", gruppText);
-        WebElement usersUndersvarsgrupp = getElementSafely(usersUndersvarsgruppXpath, driver, wait);
+        WebElement usersUndersvarsgrupp = Support.getElementSafely(usersUndersvarsgruppXpath, driver, wait);
 
         assertThat(usersUndersvarsgrupp.isDisplayed(), is(equalTo(Boolean.TRUE)));
     }
@@ -290,16 +286,16 @@ public class Steps {
     @When("^Under Svarsgrupp node, Admin tries to expand Users$")
     public void whenAdminTriesToExpandAnvändareUnderSvarsgruppNode() throws Throwable {
         String usersExpandUnderSvarsgruppXpath = String.format("//li[div[h3[div[contains(text(), '%s')]]]]//div[contains(., 'Users')]//div[img[@alt ='Expandera']]", gruppText);
-        WebElement usersExpandUnderSvarsgrupp = getElementSafely(usersExpandUnderSvarsgruppXpath, driver, wait);
+        WebElement usersExpandUnderSvarsgrupp = Support.getElementSafely(usersExpandUnderSvarsgruppXpath, driver, wait);
         wait.until(elementToBeClickable(usersExpandUnderSvarsgrupp));
         usersExpandUnderSvarsgrupp.click();
-        takeNSaveScreenshots(String.format("screenshots/%s.png", "expandedSvarsgruppUser"));
+        Support.takeNSaveScreenshots(String.format("screenshots/%s.png", "expandedSvarsgruppUser"));
     }
 
     @Then("^Users under Svarsgrupp expands$")
     public void thenUsersUnderSvarsgruppExpands() throws Throwable {
         String underSvarsgruppUsersXpath = String.format("//li[div[h3[div[contains(text(), '%s')]]]]//div[contains(., 'Users')]/../ul", gruppText);
-        List<WebElement> underSvarsgruppUsers = getElementsSafely(underSvarsgruppUsersXpath, driver, wait);
+        List<WebElement> underSvarsgruppUsers = Support.getElementsSafely(underSvarsgruppUsersXpath, driver, wait);
         int displayedElementUnderSvarsgruppUsers = 0;
         for (WebElement element : underSvarsgruppUsers) {
             if (element.isDisplayed()) {
@@ -312,7 +308,7 @@ public class Steps {
     @Then("^Svarsgrupp Users nr (\\d+) is listed with name$")
     public void svarsgruppUsersNrIsListedWithName(int userNr) {
         String numNameRoleOfSvarsgruppUsersXpath = String.format("//li[div[h3[div[contains(text(), '%s')]]]]//div[contains(., 'Users')]/../ul//span[@class = 'overview-link-text ng-binding' and @title]", gruppText);
-        List<WebElement> numNameRoleOfSvarsgruppUsers = getElementsSafely(numNameRoleOfSvarsgruppUsersXpath, driver, wait);
+        List<WebElement> numNameRoleOfSvarsgruppUsers = Support.getElementsSafely(numNameRoleOfSvarsgruppUsersXpath, driver, wait);
         String usersNumNameRole = numNameRoleOfSvarsgruppUsers.get(userNr - 1).getText();
         // extracting only name from the whole text- Maria Niskanen  (0706554610, 060171501) (adm)
         String usersName = usersNumNameRole.substring(0, usersNumNameRole.indexOf("("));
@@ -323,7 +319,7 @@ public class Steps {
     @Then("^Svarsgrupp Users nr (\\d+) is listed with fixednumber$")
     public void svarsgruppUsersNrIsListedWithFixedNumber(int userNr) {
         String numNameRoleOfSvarsgruppUsersXpath = String.format("//li[div[h3[div[contains(text(), '%s')]]]]//div[contains(., 'Users')]/../ul//span[@class = 'overview-link-text ng-binding' and @title]", gruppText);
-        List<WebElement> numNameRoleOfSvarsgruppUsers = getElementsSafely(numNameRoleOfSvarsgruppUsersXpath, driver, wait);
+        List<WebElement> numNameRoleOfSvarsgruppUsers = Support.getElementsSafely(numNameRoleOfSvarsgruppUsersXpath, driver, wait);
         String usersNumNameRole = numNameRoleOfSvarsgruppUsers.get(userNr - 1).getText();
         // extracting only phone number from the whole text- Maria Niskanen  (0706554610, 060171501) (adm)
         String usersFixedNumberText = usersNumNameRole.substring(usersNumNameRole.indexOf("(") + 1, usersNumNameRole.indexOf(")"));
@@ -333,7 +329,7 @@ public class Steps {
 
         for (String usersFixedNumber : usersFixedNumberList) {
             usersFixedNumber = usersFixedNumber.trim();  // removing leading and trailing white space
-            assertThat(isInteger(usersFixedNumber), is(equalTo(Boolean.TRUE)));
+            assertThat(Support.isInteger(usersFixedNumber), is(equalTo(Boolean.TRUE)));
         }
 
     }
@@ -341,7 +337,7 @@ public class Steps {
     @Then("^Svarsgrupp Users nr (\\d+) is listed with adm or not$")
     public void svarsgruppUsersNrIsListedWithAdmOrNot(int userNr) {
         String numNameRoleOfSvarsgruppUsersXpath = String.format("//li[div[h3[div[contains(text(), '%s')]]]]//div[contains(., 'Users')]/../ul//span[@class = 'overview-link-text ng-binding' and @title]", gruppText);
-        List<WebElement> numNameRoleOfSvarsgruppUsers = getElementsSafely(numNameRoleOfSvarsgruppUsersXpath, driver, wait);
+        List<WebElement> numNameRoleOfSvarsgruppUsers = Support.getElementsSafely(numNameRoleOfSvarsgruppUsersXpath, driver, wait);
         String usersNumNameRole = numNameRoleOfSvarsgruppUsers.get(userNr - 1).getText();
         String usersRole;
 
@@ -360,7 +356,7 @@ public class Steps {
     @Then("^Svarsgrupp Users nr (\\d+) is listed with Inloggad/Ej inloggad$")
     public void svarsgruppUsersNrIsListedWithInloggadEjInloggad(int userNr) {
         String logStatusOfSvarsgruppUsersXpath = String.format("//li[div[h3[div[contains(text(), '%s')]]]]//div[contains(., 'Users')]/../ul//span[@class = 'ng-binding ng-scope']", gruppText);
-        List<WebElement> logStatusOfSvarsgruppUsers = getElementsSafely(logStatusOfSvarsgruppUsersXpath, driver, wait);
+        List<WebElement> logStatusOfSvarsgruppUsers = Support.getElementsSafely(logStatusOfSvarsgruppUsersXpath, driver, wait);
         String usersLogStatus = logStatusOfSvarsgruppUsers.get(userNr - 1).getText();
 
         assertThat(usersLogStatus.isEmpty(), is(equalTo(Boolean.FALSE)));
@@ -378,7 +374,7 @@ public class Steps {
         } else {
             titleXpath = String.format("//li[@class = 'overview-row last-child']/div/a[@class = 'overview-link-sep ng-scope']/span[@class ='overview-link-text ng-binding'  and @title and text()] ");
         }
-        WebElement gruppTitle = getElementSafely(titleXpath, driver, wait);
+        WebElement gruppTitle = Support.getElementSafely(titleXpath, driver, wait);
         gruppTitleText = gruppTitle.getText();
 // seems unnecessary since there is not depicted whether the combination of name and num should be unique
 //        List<WebElement> numList = getElementsSafely(String.format("//h3//div[contains(text(), '%s')]", grupp), driver, wait);
@@ -388,7 +384,7 @@ public class Steps {
         wait.until(elementToBeClickable(gruppTitle));
         gruppTitle.click();
 
-        takeNSaveScreenshots(String.format("screenshots/%s.png", gruppTitleText + "forwardedpage"));
+        Support.takeNSaveScreenshots(String.format("screenshots/%s.png", gruppTitleText + "forwardedpage"));
 
     }
 
@@ -408,7 +404,7 @@ public class Steps {
         //discarding quotation mark
         Pattern pattern = Pattern.compile("\"(.*?)\"");
 
-        WebElement forwardedTitle = getElementSafely(forwardedTitleXpath, driver, wait);
+        WebElement forwardedTitle = Support.getElementSafely(forwardedTitleXpath, driver, wait);
 //        JOptionPane.showMessageDialog(new JFrame(), forwardedTitle.size());
         Matcher matcher = pattern.matcher(gruppTitleText);
         if (matcher.find()) {
@@ -431,15 +427,15 @@ public class Steps {
     public void adminChangesNameTo(String newName) throws Throwable {
         // click on bytNamn
         String bytNamnXpath = "//h1[contains(@id , 'change-')]/a[not(@disabled) and span[contains(text(), 'Byt namn')]]";
-        WebElement bytNamn = getElementSafely(bytNamnXpath, driver, wait);
+        WebElement bytNamn = Support.getElementSafely(bytNamnXpath, driver, wait);
         wait.until(elementToBeClickable(bytNamn));
         bytNamn.click();
 
-        takeNSaveScreenshots(String.format("screenshots/%s.png", "changeNamepage"));
+        Support.takeNSaveScreenshots(String.format("screenshots/%s.png", "changeNamepage"));
 
         // writing on the input
         String titleInputXpath = "//h1[contains(@id, 'change-')]/span/input[contains(@name, 'Name')]";
-        WebElement titleInput = getElementSafely(titleInputXpath, driver, wait);
+        WebElement titleInput = Support.getElementSafely(titleInputXpath, driver, wait);
 
         // to write over the input text
         changedGruppName = newName;
@@ -459,7 +455,7 @@ public class Steps {
         driver.navigate().back();
 
         String gruppTitleXpath = String.format("//h3//div[contains(text(), '%s')]/../a/span[contains(@class , 'ng-binding')]", gruppText);
-        String gruppTitle = getElementSafely(gruppTitleXpath, driver, wait).getText();
+        String gruppTitle = Support.getElementSafely(gruppTitleXpath, driver, wait).getText();
 
     }
 
@@ -467,11 +463,11 @@ public class Steps {
     @When("^Admin tries to expand ([A-zöåä /]+)$")
     public void adminTriesToExpand(String expandText) throws Throwable {
         String underGruppXpath = String.format("//ul[contains(@data-title,'%s')]/li/ul//li", gruppText);
-        List<WebElement> underGrupp = getElementsSafely(underGruppXpath, driver, wait);
+        List<WebElement> underGrupp = Support.getElementsSafely(underGruppXpath, driver, wait);
         listSizeBeforeTryingToExpand = underGrupp.size();
 
         String circleUnderGruppXpath = String.format("//ul[contains(@data-title,'%s')]//li/div[contains(. , '%s')]/span[@class = 'circle']", gruppText, expandText);
-        WebElement circleUnderGrupp = getElementSafely(circleUnderGruppXpath, driver, wait);
+        WebElement circleUnderGrupp = Support.getElementSafely(circleUnderGruppXpath, driver, wait);
         circleUnderGrupp.click();
         listSizeAfterTryingToExpand = underGrupp.size();
 
@@ -485,11 +481,11 @@ public class Steps {
     @Given("^Admin clicks on the link of Svarsgrupp Users nr (\\d+)$")
     public void adminClicksOnTheLinkOfSvarsgruppUsersNr(int userNr) throws Throwable {
         String svarsgruppUsersLinkXpath = String.format("//li[div[h3[div[contains(text(), '%s')]]]]//div[contains(., 'Users')]/../ul//a[span[@class = 'overview-link-text ng-binding' and @title]]", gruppText);
-        List<WebElement> svarsgruppUsersLinkList = getElementsSafely(svarsgruppUsersLinkXpath, driver, wait);
+        List<WebElement> svarsgruppUsersLinkList = Support.getElementsSafely(svarsgruppUsersLinkXpath, driver, wait);
         WebElement svarsgruppUsersLink = svarsgruppUsersLinkList.get(userNr - 1);
         wait.until(elementToBeClickable(svarsgruppUsersLink));
         svarsgruppUsersLink.click();
-        takeNSaveScreenshots(String.format("screenshots/%s.png", "Svarsgrupp Users nr link forward"));
+        Support.takeNSaveScreenshots(String.format("screenshots/%s.png", "Svarsgrupp Users nr link forward"));
     }
 
     private Map<String, String> changes;
@@ -499,24 +495,24 @@ public class Steps {
 
         // changing first name
         String firstNameInputXpath = String.format("//input[@id = 'change-firstname-id']");
-        WebElement firstNameInput = getElementSafely(firstNameInputXpath, driver, wait);
+        WebElement firstNameInput = Support.getElementSafely(firstNameInputXpath, driver, wait);
         wait.until(visibilityOf(firstNameInput));
         firstNameInput.sendKeys(Keys.chord(Keys.CONTROL, "a"), changes.get("new first name"));
 
         //changing last name
         String lastNameInputXpath = String.format("//input[@id = 'change-lastname-id']");
-        WebElement lastNameInput = getElementSafely(lastNameInputXpath, driver, wait);
+        WebElement lastNameInput = Support.getElementSafely(lastNameInputXpath, driver, wait);
         lastNameInput.sendKeys(Keys.chord(Keys.CONTROL, "a"), changes.get("new last name"));
 
         // changing adm or not
         String admOrNotXpath = String.format("//label[input[@type = 'radio' and @value = '%s']]", changes.get("new adm or not"));
-        WebElement admOrNot = getElementSafely(admOrNotXpath, driver, wait);
+        WebElement admOrNot = Support.getElementSafely(admOrNotXpath, driver, wait);
         wait.until(elementToBeClickable(admOrNot));
         admOrNot.click();
 
         //saving the changes
         String saveXpath = String.format("//input[@id = 'save-user-id']");
-        WebElement saveList = getElementSafely(saveXpath, driver, wait);
+        WebElement saveList = Support.getElementSafely(saveXpath, driver, wait);
         wait.until(elementToBeClickable(saveList));
         saveList.click();
 
@@ -537,7 +533,7 @@ public class Steps {
     public void adminVerifiesTheChangesInSvarsgruppUsersNr(int userNr) throws Throwable {
 
         String numNameRoleOfSvarsgruppUsersXpath = String.format("//li[div[h3[div[contains(text(), '%s')]]]]//div[contains(., 'Users')]/../ul//span[@class = 'overview-link-text ng-binding' and @title]", gruppText);
-        List<WebElement> numNameRoleOfSvarsgruppUsers = getElementsSafely(numNameRoleOfSvarsgruppUsersXpath, driver, wait);
+        List<WebElement> numNameRoleOfSvarsgruppUsers = Support.getElementsSafely(numNameRoleOfSvarsgruppUsersXpath, driver, wait);
 
         // extracting the text which enlists users number, name and role
         String usersNumNameRole = numNameRoleOfSvarsgruppUsers.get(userNr - 1).getText();
@@ -574,87 +570,7 @@ public class Steps {
 
     }
 
-    public Boolean isInteger(String s) {
-        try {
-            // using Long so that it would not throw NumberFormatException when the number is too large
-            // especially for the phone number including also the country code
-            Long.parseLong(s);
-            return Boolean.TRUE;
-        } catch (NumberFormatException e) {
-            return Boolean.FALSE;
-        }
-    }
 
 
-    /**
-     * method to wait before actually capturing the element
-     * @param myXpathArg Xpath to the element
-     * @param driver driver used
-     * @param wait wait used
-     * @return WebElement element from the xpath
-     */
-    public static WebElement getElementSafely(String myXpathArg, WebDriver driver, WebDriverWait wait) {
-        wait.until(presenceOfElementLocated(By.xpath(myXpathArg)));
-        try {
-            Thread.sleep(500);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        return driver.findElement(By.xpath(myXpathArg));
-
-    }
-
-    /**
-     * method to wait before actually capturing the elements
-     * @param myXpathArg Xpath to the list of elements
-     * @param driver driver used
-     * @param wait wait used
-     * @return List<WebElement> List of elements from the xpath
-     */
-        public static List<WebElement> getElementsSafely(String myXpathArg, WebDriver driver, WebDriverWait wait) {
-        wait.until(presenceOfAllElementsLocatedBy(By.xpath(myXpathArg)));
-        try {
-            Thread.sleep(500);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        return driver.findElements(By.xpath(myXpathArg));
-
-    }
-
-    /**
-     * method to take screenshot and save them
-     * @param fileName path where screenshot is saved
-     */
-    public void takeNSaveScreenshots(String fileName) {
-        try {
-            Thread.sleep(500);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        File scrFile = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
-
-        try {
-            FileUtils.copyFile(scrFile, new File(fileName));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    @After()
-    /**
-     * method to take screenshot when a scenario is failed and embed it to the report
-     * method also closes the browser
-     * @param scenario current scenario
-     */
-    public void tearDown(Scenario scenario) {
-        if (scenario.isFailed()) {
-            // Take a screenshot...
-            final byte[] screenshot = ((TakesScreenshot) driver).getScreenshotAs(OutputType.BYTES);
-            scenario.embed(screenshot, "image/png"); // and embed it in the report.
-        }
-
-        driver.quit();
-    }
 
 }
