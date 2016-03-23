@@ -1,5 +1,5 @@
 Feature: Admin expands Svarsgrupp
-  In order to navigate Svarsgrupp
+  In order to see the Svarsgrupp settings
   As a Admin
   I want to expand Svarsgrupp
 
@@ -17,3 +17,5 @@ Feature: Admin expands Svarsgrupp
       | svarsgruppNodeNr |
       | 1                |
       | 2                |
+
+

@@ -40,6 +40,8 @@ public class Steps {
     // passing scenario from Hooks
     private Scenario scenario = Hooks.scenario;
 
+
+
     @Given("^Admin visits (https?:\\/\\/.+)$")
     public void adminVisits(String website) throws Throwable {
 
@@ -423,6 +425,7 @@ public class Steps {
     }
 
     private String changedGruppName;
+
     @When("^Admin changes name to (.+)$")
     public void adminChangesNameTo(String newName) throws Throwable {
         // click on bytNamn
@@ -460,6 +463,7 @@ public class Steps {
     }
 
     private int listSizeBeforeTryingToExpand, listSizeAfterTryingToExpand;
+
     @When("^Admin tries to expand ([A-zöåä /]+)$")
     public void adminTriesToExpand(String expandText) throws Throwable {
         String underGruppXpath = String.format("//ul[contains(@data-title,'%s')]/li/ul//li", gruppText);
@@ -489,6 +493,7 @@ public class Steps {
     }
 
     private Map<String, String> changes;
+
     @When("^Admin changes Svarsgrupp user settings:$")
     public void adminChangesSvarsgruppUserSettings(Map<String, String> changes) throws Throwable {
         this.changes = changes;
@@ -569,8 +574,6 @@ public class Steps {
         assertThat(lastName, is(equalTo(changes.get("new last name"))));
 
     }
-
-
 
 
 }
