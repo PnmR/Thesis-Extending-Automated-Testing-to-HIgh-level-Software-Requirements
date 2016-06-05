@@ -4,7 +4,7 @@ Feature: Admin clicks on the Menystyrning link
   I want to click on the Menystyrning link
 
   Background:
-    Given Admin visits http://smesol-aw-test.sundsvall.dewire.com:8080/web/smesol/index?CT_REMOTE_USER=Selenium&IDP=TIWSS&MO_ROLE=CUSTOMER_SUPPORT
+    Given Admin visits http://smesol-aw-test.sundsvall.dewire.com:8080/web/smesol/index?CT_REMOTE_USER=Selenium2&IDP=TIWSS&MO_ROLE=CUSTOMER_SUPPORT
     And Admin goes to Admin Web Ab section
     And Admin clicks on Start
 

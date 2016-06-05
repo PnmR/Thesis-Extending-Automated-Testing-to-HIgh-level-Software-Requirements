@@ -11,7 +11,7 @@ Feature: Admin changes name of Svarsgrupp
 
   Scenario Outline: Given Svarsgrupp node
     Given Admin is checking Svarsgrupp node nr <nodeNr>
-    And  Admin clicks on the link
+    And  Admin clicks on the Svarsgrupp link
     When Admin changes name to <newName>
     Then Admin verifies if the name is changed
 

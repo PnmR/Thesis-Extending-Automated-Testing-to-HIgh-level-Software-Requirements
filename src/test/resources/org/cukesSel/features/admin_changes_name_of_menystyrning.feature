@@ -11,7 +11,7 @@ Feature: Admin changes name of Menystyrning
 
   Scenario Outline: Given Menystyrning node
     Given Admin is checking Menystyrning node nr <nodeNr>
-    And  Admin clicks on the link
+    And  Admin clicks on the Menystyrning link
     When Admin changes name to <newName>
     Then Admin verifies if the name is changed
 

@@ -1,5 +1,6 @@
 package org.cukesSel.step_definitions;
 
+import cucumber.api.Scenario;
 import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -67,20 +68,26 @@ public class Support {
 
     /**
      * method to take screenshot and save them
-     * @param fileName path where screenshot is saved
+     * @param scenario 's named directory will be used to save the screenshot
      */
-    public static void takeNSaveScreenshots(String fileName) {
+    public static void takeNSaveScreenshots(Scenario scenario) {
         try {
             Thread.sleep(500);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+
+        new File(String.format("target/screenshots/%s", scenario.getName())).mkdirs();
+        int numOfFiles = new File(String.format("target/screenshots/%s", scenario.getName())).listFiles().length;
+
         File scrFile = ((TakesScreenshot) Hooks.driver).getScreenshotAs(OutputType.FILE);
 
         try {
-            FileUtils.copyFile(scrFile, new File(fileName));
+            FileUtils.copyFile(scrFile, new File(String.format("target/screenshots/%s/screenshot%d.png", scenario.getName(), numOfFiles+1)));
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
+
+
 }

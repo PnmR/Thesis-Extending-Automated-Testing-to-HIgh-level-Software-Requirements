@@ -12,7 +12,7 @@ Feature: Admin expands Svarsgrupp
     Given Admin clicks on tab Växelöversikt
     And Admin is checking Svarsgrupp node nr <svarsgruppNodeNr>
     When Admin expands Svarsgrupp
-    Then For this node, Users logged in is visible
+    Then For this node, Användare logged in is visible
     Examples:
       | svarsgruppNodeNr |
       | 1                |

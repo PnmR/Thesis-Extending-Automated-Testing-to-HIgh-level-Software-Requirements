@@ -15,9 +15,9 @@ import org.junit.runner.RunWith;
         // for eg, if "RunnerTest" lies in "org.cukesSel
         //then Cucumber will search feature file in "org/cukesSel"
         // but if someone needs to override this, simple give path to the features
-        features = "src/test/resources/org/cukesSel/features/admin_expands _users.feature"
+        features = "src/test/resources/org/cukesSel/features"
 
-        //   features = "src/test/resources/features/admin_expands_users_under_svarsgrupp_node.feature",
+        //   features = "src/test/resources/features/admin_expands_användare_under_svarsgrupp_node.feature",
         //if steps are on some places other than the normal cucumber file structure glue can be fed with the steps path
         //glue = "org.cukesSel.step_definitions"
 
